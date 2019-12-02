@@ -1,0 +1,18 @@
+# mac
+.DS_Store
+/__MACOSX/
+
+# idea
+.idea
+.vscode
+
+# libraries
+/node_modules/
+
+# error
+yarn-error.log
+npm-error.log
+
+# lock
+yarn.lock
+package-lock.json
