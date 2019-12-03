@@ -11,10 +11,10 @@
 
   // CommonJS
   if (typeof exports !== 'undefined' && !exports.nodeType) {
-    factory(exports);
+    exports.tinyDatepicker = factory();
   } else if (globalObj) {
     // register tiny-datepicker
-    globalObj.tinyDatepicker = factory({});
+    globalObj.tinyDatepicker = factory();
     // if exist amd
     if (typeof define === 'function' && define.amd) {
       define([], function () {
@@ -22,6 +22,21 @@
       });
     }
   }
-}(function (global) {
-  // pass
+}(function () {
+  // utils
+  
+  // datepicker
+  function DatePicker (selector, options) {
+    
+  }
+
+  // tiny datepicker
+  var tinyDatePicker = {
+    init: function (selector) {
+      return new DatePicker(selector);
+    }
+  }
+
+  // return tinyDatePicker
+  return tinyDatePicker;
 }));
