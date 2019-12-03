@@ -1,12 +1,14 @@
 module.exports = {
 	root: true,
 	extends: 'standard',
-	parseOptions: {
+	parserOptions: {
 		sourceType: 'module'
 	},
 	env: {
 		node: true,
-		jest: true
+		jest: true,
+		worker: true,
+		amd: true
 	},
 	rules: {
 		"indent": ["error", 2],
@@ -16,4 +18,4 @@ module.exports = {
 		"arrow-parents": 0,
 		"no-new": "off"
 	}
-}
+};

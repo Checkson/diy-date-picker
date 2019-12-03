@@ -7,7 +7,8 @@
     "test": "tests"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "eslint --ext .js src/ --ext .js test/",
+    "lintFix": "eslint --fix --ext .js src/ --fix --ext .js test/"
   },
   "repository": {
     "type": "git",
