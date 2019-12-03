@@ -7,8 +7,10 @@
     "test": "tests"
   },
   "scripts": {
-    "lint": "eslint --ext .js src/ --ext .js test/",
-    "lintFix": "eslint --fix --ext .js src/ --fix --ext .js test/"
+    "dev": "gulp watch",
+    "build": "gulp",
+    "lint": "eslint --ext .js src/ --ext .js test/ --ext .js gulpfile.js",
+    "lintFix": "eslint --fix --ext .js src/ --fix --ext .js test/ --fix --ext .js gulpfile.js"
   },
   "repository": {
     "type": "git",
@@ -27,13 +29,23 @@
     "url": "https://github.com/Checkson/tiny-datepicker/issues"
   },
   "homepage": "https://github.com/Checkson/tiny-datepicker#readme",
-  "dependencies": {
+  "devDependencies": {
     "eslint": "^6.7.2",
     "eslint-config-standard": "^14.1.0",
     "eslint-loader": "^3.0.2",
     "eslint-plugin-import": "^2.18.2",
     "eslint-plugin-node": "^10.0.0",
     "eslint-plugin-promise": "^4.2.1",
-    "eslint-plugin-standard": "^4.0.1"
+    "eslint-plugin-standard": "^4.0.1",
+    "gulp": "^4.0.2",
+    "gulp-concat": "^2.6.1",
+    "gulp-connect": "^5.7.0",
+    "gulp-livereload": "^4.0.2",
+    "gulp-minify-css": "^1.2.4",
+    "gulp-notify": "^3.2.0",
+    "gulp-rename": "^1.4.0",
+    "gulp-sass": "^4.0.2",
+    "gulp-uglify": "^3.0.2",
+    "jest": "^24.9.0"
   }
 }
