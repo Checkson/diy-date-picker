@@ -27,6 +27,10 @@
   cursor: pointer;
 }
 
+.tiny-datepicker__btn:hover {
+  color: #409eff;
+}
+
 .tiny-datepicker__prev-btn {
   float: left;
 }
@@ -35,7 +39,7 @@
   float: right;
 }
 
-.tiny-datepicker__label {
+.tiny-datepicker__header-label {
   font-size: 16px;
   font-weight: 500;
   padding: 0 5px;
@@ -43,6 +47,10 @@
   text-align: center;
   cursor: pointer;
   color: #606266;
+}
+
+.tiny-datepicker__header-label:hover {
+  color: #409eff;
 }
 
 .tiny-datepicker__body {
@@ -58,6 +66,12 @@
   text-align: center;
 }
 
+.tiny-datepicker__month-table {
+    font-size: 12px;
+    margin: -1px;
+    border-collapse: collapse;
+}
+
 .tiny-datepicker__table th {
   padding: 5px;
   color: #606266;
@@ -70,4 +84,16 @@
   padding: 3px 0;
   box-sizing: border-box;
   cursor: pointer;
+}
+
+.tiny-datepicker__table td.available:hover {
+  color: #409eff;
+}
+
+.tiny-datepicker__table td.prev-month {
+  color: #c0c4cc;
+}
+
+.tiny-datepicker__table td.next-month {
+  color: #c0c4cc;
 }
