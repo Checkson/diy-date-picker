@@ -67,6 +67,7 @@
     this.$datePicker = null;
     this.state = {
       showStatus: 0, // 0 -> date, 1 -> month, 2 -> year
+      weekData: [], // sunday, monday, tuesday, wednesday, thursday, friday, saturday
       dateData: [],
       monthData: [],
       yearData: [],
@@ -74,23 +75,32 @@
       month: null,
       year: null
     };
+    this.init();
   }
 
   DatePicker.prototype.init = function () {
     this.initData();
+    this.initDom();
     this.initRender();
     this.initEvent();
   };
 
   DatePicker.prototype.initData = function () {
+    this.initWeekData();
     this.initDateData();
     this.initMonthData();
     this.initYearData();
   };
 
-  DatePicker.prototype.initDateData = function (year, month) {
-    var thisYear = year;
-    var thisMonth = month;
+  DatePicker.prototype.initWeekData = function () {
+    this.state.weekData = [
+      '日', '一', '二', '三', '四', '五', '六'
+    ];
+  };
+
+  DatePicker.prototype.initDateData = function () {
+    var thisYear = this.state.year;
+    var thisMonth = this.state.month;
 
     if (!thisYear || !thisMonth) {
       var now = new Date();
@@ -117,11 +127,11 @@
     var dayCountOfWeek = 7;
     var rowCountOfDisplay = 6;
 
-    // clear
-    this.clearData();
+    // clear date data
+    this.clearDateData();
 
     if (firstDayOfThisMonth === 0) {
-      for (var i = 6; i >= 0; i--) {
+      for (var i = dayCountOfWeek - 1; i >= 0; i--) {
         this.state.dateData.unshift({
           day: i,
           date: dayCountOfLastMonth + i - 6,
@@ -134,30 +144,30 @@
     }
 
     for (var j = 0; j < dayCountOfWeek * rowCountOfDisplay; j++) {
-      var date, tmpMonth, tmpYear;
+      var date, month, Year;
       var classIndex = 0; // 0 -> available, 1 -> prev-month, 2 -> next-month
 
       if (j < firstDayOfThisMonth) { // last month
         date = dayCountOfLastMonth - firstDayOfThisMonth + j + 1;
-        tmpMonth = lastMonth;
-        tmpYear = lastMonthOfYear;
+        month = lastMonth;
+        Year = lastMonthOfYear;
         classIndex = 1;
       } else if (j > dayCountOfThisMonth + firstDayOfThisMonth - 1) { // next month
         date = j - dayCountOfThisMonth - firstDayOfThisMonth + 1;
-        tmpMonth = nextMonth;
-        tmpYear = nextMonthOfYear;
+        month = nextMonth;
+        Year = nextMonthOfYear;
         classIndex = 2;
       } else { // this month
         date = j - firstDayOfThisMonth + 1;
-        tmpMonth = thisMonth;
-        tmpYear = thisYear;
+        month = thisMonth;
+        Year = thisYear;
       }
 
       this.state.dateData.push({
         day: j % dayCountOfWeek,
         date: date,
-        month: tmpMonth,
-        year: tmpYear,
+        month: month,
+        year: Year,
         classIndex: classIndex
       });
     }
@@ -175,10 +185,19 @@
   };
 
   DatePicker.prototype.initYearData = function () {
+    var thisYear = this.state.year;
+    var countOfYear = 10;
+    var minYear = thisYear - (thisYear % countOfYear);
+      
+    // clear year data
+    this.clearYearData();
 
+    for (var i = 0; i < countOfYear; i++) {
+      this.state.yearData.push(minYear + i);
+    }
   };
 
-  DatePicker.prototype.initView = function () {
+  DatePicker.prototype.initDom = function () {
     var $view = [
       '<div class="tiny-datepicker__header">',
       '<button class="tiny-datepicker__btn tiny-datepicker__prev-btn tiny-datepicker__prev-year">&lt;&lt;</button>',
@@ -190,122 +209,301 @@
       '</div>',
       '<div class="tiny-datepicker__body">',
       '<table class="tiny-datepicker__table tiny-datepicker__date-table">',
-      '<thead>',
-      '<tr>',
-      '<th>日</th>',
-      '<th>一</th>',
-      '<th>二</th>',
-      '<th>三</th>',
-      '<th>四</th>',
-      '<th>五</th>',
-      '<th>六</th>',
-      '</tr>',
-      '</thead>',
-      '<tbody>',
-      '</tbody>',
+      '<thead></thead>',
+      '<tbody></tbody>',
       '</table>',
       '<table class="tiny-datepicker__table tiny-datepicker__year-table" style="display:none">',
-      '<tbody>',
-      '<tr><td>2010</td><td>2011</td><td>2012</td><td>2013</td></tr>',
-      '<tr><td>2014</td><td>2015</td><td>2016</td><td>2017</td></tr>',
-      '<tr><td>2018</td><td>2019</td><td></td><td></td></tr>',
-      '</tbody>',
+      '<tbody></tbody>',
       '</table>',
       '<table class="tiny-datepicker__table tiny-datepicker__month-table" style="display: none">',
-      '<tbody>',
-      '<tr><td>一月</td><td>二月</td><td>三月</td><td>四月</td></tr>',
-      '<tr><td>五月</td><td>六月</td><td>七月</td><td>八月</td></tr>',
-      '<tr><td>九月</td><td>十月</td><td>十一月</td><td>十二月</td></tr>',
-      '</tbody>',
+      '<tbody></tbody>',
       '</table>',
-      '</div>'].join('');
-    return $view;
+      '</div>'];
+
+    var $datePicker = document.createElement('div');
+    $datePicker.className = 'tiny-datepicker__wrapper';
+    $datePicker.innerHTML = $view.join('');
+    
+    // init dom for datepicker
+    this.$datePicker = $datePicker;
+    this.$showYear = this.getDom('.tiny-datepicker__show-year');
+    this.$showMonth = this.getDom('.tiny-datepicker__show-month');
+    this.$dateTable = this.getDom('.tiny-datepicker__date-table');
+    this.$monthTable = this.getDom('.tiny-datepicker__month-table');
+    this.$yearTable = this.getDom('.tiny-datepicker__year-table');
+    this.$prevYear = this.getDom('.tiny-datepicker__prev-year');
+    this.$prevMonth = this.getDom('.tiny-datepicker__prev-month');
+    this.$nextMonth = this.getDom('.tiny-datepicker__next-month');
+    this.$nextYear = this.getDom('.tiny-datepicker__next-year');
   };
 
   DatePicker.prototype.initRender = function () {
-    this.$datePicker = document.createElement('div');
-    this.$datePicker.className = 'tiny-datepicker__wrapper';
-    this.$datePicker.innerHTML = this.initView();
-    this.renderDateData();
+    this.render();
     document.body.appendChild(this.$datePicker);
   };
 
-  DatePicker.prototype.initEvent = function () {
-    this.$datePicker.querySelector('.tiny-datepicker__year-table').addEventListener('click', this.changeYearView.bind(this));
-    this.$datePicker.querySelector('.tiny-datepicker__month-table').addEventListener('click', this.changeMonthView.bind(this));
-    this.$datePicker.querySelector('.tiny-datepicker__prev-year').addEventListener('click', this.doPrevYear.bind(this));
-    this.$datePicker.querySelector('.tiny-datepicker__prev-month').addEventListener('click', this.doPrevMonth.bind(this));
-    this.$datePicker.querySelector('.tiny-datepicker__next-month').addEventListener('click', this.doNextMonth.bind(this));
-    this.$datePicker.querySelector('.tiny-datepicker__next-year').addEventListener('click', this.doNextYear.bind(this));
+  DatePicker.prototype.render = function () {
+    this.renderWeekData();
+    this.renderDateData();
+    this.renderMonthData();
+    this.renderYearData();
+  };
+
+  DatePicker.prototype.renderWeekData = function () {
+    var $view = [];
+    var weekData = this.state.weekData;
+
+    $view.push('<tr>');
+
+    for (var i = 0, len = weekData.length; i < len; i++) {
+      $view.push('<th>' + weekData[i] + '</th>');
+    }
+
+    $view.push('</tr>');
+
+    this.$dateTable.querySelector('thead').innerHTML = $view.join('');
   };
 
   DatePicker.prototype.renderDateData = function () {
     var $view = [];
     var dateData = this.state.dateData;
-    var year = this.state.year;
-    var month = this.state.month;
     var tdClassList = ['available', 'prev-month', 'next-month'];
+    var countOfRow = 7;
 
     for (var i = 0, len = dateData.length; i < len; i++) {
       var data = dateData[i];
 
-      if (i % 7 === 0) {
+      if (i % countOfRow === 0) {
         $view.push('<tr>');
       }
 
       $view.push('<td class="' + tdClassList[data.classIndex] + '"><span>' + data.date + '</span></td>');
 
-      if (i % 7 === 6) {
+      if (i % countOfRow === countOfRow - 1) {
         $view.push('</tr>');
       }
     }
-    this.$datePicker.querySelector('.tiny-datepicker__show-year').innerHTML = year + '年';
-    this.$datePicker.querySelector('.tiny-datepicker__show-month').innerHTML = pad(month, '0', 2) + '月';
-    this.$datePicker.querySelector('tbody').innerHTML = $view.join('');
+
+    this.$dateTable.querySelector('tbody').innerHTML = $view.join('');
+    this.isDateView() && this.changeDateTableHeaderView();
   };
 
-  DatePicker.prototype.changeYearView = function () {
-    this.changeView(2);
+  DatePicker.prototype.renderMonthData = function () {
+    var $view = [];
+    var monthData = this.state.monthData;
+    var countOfRow = 4;
+
+    for (var i = 0, len = monthData.length; i < len; i++) {
+      if (i % countOfRow === 0) {
+        $view.push('<tr>');
+      }
+
+      $view.push('<td><span>' + monthData[i] + '</span></td>');
+
+      if (i % countOfRow === countOfRow - 1) {
+        $view.push('</tr>');
+      }
+    }
+
+    this.$monthTable.querySelector('tbody').innerHTML = $view.join('');
+    this.isMonthView() && this.changeMonthTableHeaderView();
+  };
+
+  DatePicker.prototype.renderYearData = function () {
+    var $view = [];
+    var yearData = this.state.yearData;
+    var countOfRow = 4, amount = 12;
+
+    for (var i = 0; i < amount; i++) {
+      if (i % countOfRow === 0) {
+        $view.push('<tr>');
+      }
+
+      $view.push('<td><span>' + (yearData[i] || '') + '</span></td>');
+
+      if (i % countOfRow === countOfRow - 1) {
+        $view.push('</tr>');
+      }
+    }
+    
+    this.$yearTable.querySelector('tbody').innerHTML = $view.join('');
+    this.isYearView() && this.changeYearTableHeaderView();
+  };
+
+  DatePicker.prototype.initEvent = function () {
+    this.$showMonth.addEventListener('click', this.changeMonthView.bind(this));
+    this.$showYear.addEventListener('click', this.changeYearView.bind(this));
+    this.$prevYear.addEventListener('click', this.doPrevYear.bind(this));
+    this.$prevMonth.addEventListener('click', this.doPrevMonth.bind(this));
+    this.$nextMonth.addEventListener('click', this.doNextMonth.bind(this));
+    this.$nextYear.addEventListener('click', this.doNextYear.bind(this));
+  };
+
+  DatePicker.prototype.initChooseDateEvent = function () {
+    // pass
+  };
+
+  DatePicker.prototype.initChooseMonthEvent = function () {
+    this.changeDateView();
+  };
+
+  DatePicker.prototype.initChooseYearEvent = function () {
+    this.changeMonthView();
+  };
+
+  DatePicker.prototype.toggleMonthBtnView = function (flag) {
+    var $domArr = [
+      this.$showMonth, this.$prevMonth, this.$nextMonth
+    ];
+
+    $domArr.forEach(function ($el) {
+      $el.style.display = flag ? 'block' : 'none';
+    });
+  };
+
+  DatePicker.prototype.changeDateView = function () {
+    if (!this.changeView(0)) {
+      return;
+    }
+    this.changeDateTableHeaderView();
+    this.toggleMonthBtnView(true);
+  };
+
+  DatePicker.prototype.changeDateTableHeaderView = function () {
+    this.$showYear.innerHTML = this.state.year + '年';
+    this.$showMonth.innerHTML = pad(this.state.month, '0', 2) + '月';
   };
 
   DatePicker.prototype.changeMonthView = function () {
-    this.changeView(1);
+    if (!this.changeView(1)) {
+      return;
+    }
+    this.changeMonthTableHeaderView();
+    this.toggleMonthBtnView(false);
+  };
+
+  DatePicker.prototype.changeMonthTableHeaderView = function () {
+    this.$showYear.innerHTML = this.state.year + ' 年';
+  };
+
+  DatePicker.prototype.changeYearView = function () {
+    if (!this.changeView(2)) {
+      return;
+    }
+    this.changeYearTableHeaderView();
+    this.toggleMonthBtnView(false);
+  };
+
+  DatePicker.prototype.changeYearTableHeaderView = function () {
+    var yearData = this.state.yearData;
+    var minYear = yearData[0], maxYear = yearData[yearData.length - 1];
+    this.$showYear.innerHTML = minYear + ' 年 - ' + maxYear + ' 年'
   };
 
   DatePicker.prototype.changeView = function (showStatus) {
-    this.state.showStatus = showStatus;
-    switch (showStatus) {
-    case 0:
-      break;
-    case 1:
-      break;
-    case 2:
-      break;
+    if (this.state.showStatus === showStatus) {
+      return false;
     }
+
+    this.state.showStatus = showStatus;
+
+    var $domArr = [
+      this.$dateTable, this.$monthTable, this.$yearTable
+    ];
+    
+    $domArr.forEach(function ($el, index) {
+      $el.style.display = index === showStatus ? '' : 'none';
+    });
+
+    return true;
   };
 
   DatePicker.prototype.doPrevMonth = function () {
-    this.initDateData(this.state.year, this.state.month - 1);
+    if (!this.isDateView()) {
+      return;
+    }
+    this.state.month -= 1;
+    this.initDateData();
     this.renderDateData();
   };
 
   DatePicker.prototype.doNextMonth = function () {
-    this.initDateData(this.state.year, this.state.month + 1);
+    if (!this.isDateView()) {
+      return;
+    }
+    this.state.month += 1;
+    this.initDateData();
     this.renderDateData();
   };
 
   DatePicker.prototype.doPrevYear = function () {
-    this.initDateData(this.state.year - 1, this.state.month);
-    this.renderDateData();
+    var showStatus = this.state.showStatus;
+    switch (showStatus) {
+      case 0: // date view
+      case 1: // month view
+        this.state.year -= 1;
+        break;
+      case 2: // year view
+        this.state.year -= 10;
+        break;
+    }
+    this.renderOfShowStatus();
   };
 
   DatePicker.prototype.doNextYear = function () {
-    this.initDateData(this.state.year + 1, this.state.month);
-    this.renderDateData();
+    var showStatus = this.state.showStatus;
+    switch (showStatus) {
+      case 0: // date view
+      case 1: // month view
+        this.state.year += 1;
+        break;
+      case 2: // year view
+        this.state.year += 10;
+        break;
+    }
+    this.renderOfShowStatus();
   };
 
-  DatePicker.prototype.clearData = function () {
+  DatePicker.prototype.renderOfShowStatus = function () {
+    var showStatus = this.state.showStatus;
+    switch (showStatus) {
+      case 0:
+        this.initDateData();
+        this.renderDateData();
+        break;
+      case 1:
+        this.initMonthData();
+        this.renderMonthData();
+        break;
+      case 2:
+        this.initYearData();
+        this.renderYearData();
+        break;
+    }
+  };
+
+  DatePicker.prototype.isDateView = function () {
+    return this.state.showStatus === 0;
+  };
+
+  DatePicker.prototype.isMonthView = function () {
+    return this.state.showStatus === 1;
+  };
+
+  DatePicker.prototype.isYearView = function () {
+    return this.state.showStatus === 2;
+  };
+
+  DatePicker.prototype.clearDateData = function () {
     this.state.dateData = [];
+  };
+
+  DatePicker.prototype.clearYearData = function () {
+    this.state.yearData = [];
+  };
+
+  DatePicker.prototype.getDom = function (selector) {
+    return this.$datePicker.querySelector(selector);
   };
 
   //  ---------------- tiny datepicker  ----------------
@@ -318,7 +516,7 @@
     }
   };
 
-  new DatePicker().init();
+  new DatePicker();
 
   return tinyDatePicker;
 }));
