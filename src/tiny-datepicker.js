@@ -61,6 +61,9 @@
     return new Date(year, month, 1);
   }
 
+  //  ---------------- constant  ----------------
+  var TD_CLASS_LIST = ['available', 'prev-month', 'next-month'];
+
   //  ---------------- datepicker  ----------------
   function DatePicker (el, options) {
     this.$el = el;
@@ -71,6 +74,7 @@
       dateData: [],
       monthData: [],
       yearData: [],
+      day: null,
       date: null,
       month: null,
       year: null
@@ -81,7 +85,7 @@
   DatePicker.prototype.init = function () {
     this.initData();
     this.initDom();
-    this.initRender();
+    this.render();
     this.initEvent();
   };
 
@@ -177,11 +181,18 @@
   };
 
   DatePicker.prototype.initMonthData = function () {
-    this.state.monthData = [
+    var labels = [
       '一月', '二月', '三月', '四月',
       '五月', '六月', '七月', '八月',
       '九月', '十月', '十一月', '十二月'
     ];
+
+    this.state.monthData = labels.map(function (item, index) {
+      return {
+        label: item,
+        value: index + 1
+      };
+    });
   };
 
   DatePicker.prototype.initYearData = function () {
@@ -212,10 +223,10 @@
       '<thead></thead>',
       '<tbody></tbody>',
       '</table>',
-      '<table class="tiny-datepicker__table tiny-datepicker__year-table" style="display:none">',
+      '<table class="tiny-datepicker__table tiny-datepicker__month-table">',
       '<tbody></tbody>',
       '</table>',
-      '<table class="tiny-datepicker__table tiny-datepicker__month-table" style="display: none">',
+      '<table class="tiny-datepicker__table tiny-datepicker__year-table">',
       '<tbody></tbody>',
       '</table>',
       '</div>'];
@@ -237,16 +248,13 @@
     this.$nextYear = this.getDom('.tiny-datepicker__next-year');
   };
 
-  DatePicker.prototype.initRender = function () {
-    this.render();
-    document.body.appendChild(this.$datePicker);
-  };
-
   DatePicker.prototype.render = function () {
     this.renderWeekData();
     this.renderDateData();
     this.renderMonthData();
     this.renderYearData();
+    this.changeView(this.state.showStatus);
+    document.body.appendChild(this.$datePicker);
   };
 
   DatePicker.prototype.renderWeekData = function () {
@@ -267,7 +275,6 @@
   DatePicker.prototype.renderDateData = function () {
     var $view = [];
     var dateData = this.state.dateData;
-    var tdClassList = ['available', 'prev-month', 'next-month'];
     var countOfRow = 7;
 
     for (var i = 0, len = dateData.length; i < len; i++) {
@@ -277,7 +284,7 @@
         $view.push('<tr>');
       }
 
-      $view.push('<td class="' + tdClassList[data.classIndex] + '"><span>' + data.date + '</span></td>');
+      $view.push('<td class="' + TD_CLASS_LIST[data.classIndex] + '"><span>' + data.date + '</span></td>');
 
       if (i % countOfRow === countOfRow - 1) {
         $view.push('</tr>');
@@ -285,7 +292,19 @@
     }
 
     this.$dateTable.querySelector('tbody').innerHTML = $view.join('');
-    this.isDateView() && this.changeDateTableHeaderView();
+    this.changeDateTableHeaderView();
+  };
+
+  DatePicker.prototype.reRenderDateData = function () {
+    var dateData = this.state.dateData;
+    var $tdArr = this.$dateTable.querySelectorAll('tbody tr td');
+    for (var i = 0, len = dateData.length; i < len; i++) {
+      var data = dateData[i];
+      var $td = $tdArr[i];
+      $td.className = TD_CLASS_LIST[data.classIndex];
+      $td.innerHTML = '<span>' + data.date + '</span>';
+    }
+    this.changeDateTableHeaderView();
   };
 
   DatePicker.prototype.renderMonthData = function () {
@@ -298,7 +317,7 @@
         $view.push('<tr>');
       }
 
-      $view.push('<td><span>' + monthData[i] + '</span></td>');
+      $view.push('<td><span>' + monthData[i].label + '</span></td>');
 
       if (i % countOfRow === countOfRow - 1) {
         $view.push('</tr>');
@@ -306,7 +325,12 @@
     }
 
     this.$monthTable.querySelector('tbody').innerHTML = $view.join('');
-    this.isMonthView() && this.changeMonthTableHeaderView();
+    this.changeMonthTableHeaderView();
+  };
+
+  DatePicker.prototype.reRenderMonthData = function () {
+    // view does not need to be changed
+    this.changeMonthTableHeaderView();
   };
 
   DatePicker.prototype.renderYearData = function () {
@@ -327,9 +351,20 @@
     }
     
     this.$yearTable.querySelector('tbody').innerHTML = $view.join('');
-    this.isYearView() && this.changeYearTableHeaderView();
+    this.changeYearTableHeaderView();
   };
 
+  DatePicker.prototype.reRenderYearData = function () {
+    var yearData = this.state.yearData;
+    var $tdArr = this.$yearTable.querySelectorAll('tbody tr td');
+    for (var i = 0, len = yearData.length; i < len; i++) {
+      var data = yearData[i];
+      var $td = $tdArr[i];
+      $td.innerHTML = '<span>' + data + '</span>';
+    }
+    this.changeYearTableHeaderView();
+  };
+   
   DatePicker.prototype.initEvent = function () {
     this.$showMonth.addEventListener('click', this.changeMonthView.bind(this));
     this.$showYear.addEventListener('click', this.changeYearView.bind(this));
@@ -337,17 +372,40 @@
     this.$prevMonth.addEventListener('click', this.doPrevMonth.bind(this));
     this.$nextMonth.addEventListener('click', this.doNextMonth.bind(this));
     this.$nextYear.addEventListener('click', this.doNextYear.bind(this));
+    this.initChooseEvent();
   };
 
-  DatePicker.prototype.initChooseDateEvent = function () {
-    // pass
+  DatePicker.prototype.initChooseEvent = function () {
+    var $elArr = [this.$dateTable, this.$monthTable, this.$yearTable];
+    var methodArr = ['chooseDate', 'chooseMonth', 'chooseYear'];
+    for (var i = 0, len1 = $elArr.length; i < len1; i++) {
+      var $tdArr = $elArr[i].querySelectorAll('tbody tr td');
+      for (var j = 0, len2 = $tdArr.length; j < len2; j++) {
+        $tdArr[j].addEventListener('click', this[methodArr[i]].bind(this, j));
+      }
+    }
   };
 
-  DatePicker.prototype.initChooseMonthEvent = function () {
+  DatePicker.prototype.chooseDate = function (index) {
+    var data = this.state.dateData[index];
+    var newDate = data.date;
+    var newMonth = data.month;
+    var newYear = data.year;
+    this.state.date = newDate;
+    this.state.month = newMonth;
+    this.state.year = newYear;
+    console.log(newYear + '-' + newMonth + '-' + newDate);
+  };
+
+  DatePicker.prototype.chooseMonth = function (index) {
+    var newMonth = this.state.monthData[index].value;
+    this.state.month = newMonth;
     this.changeDateView();
   };
 
-  DatePicker.prototype.initChooseYearEvent = function () {
+  DatePicker.prototype.chooseYear = function (index) {
+    var newYear = this.state.yearData[index];
+    this.state.year = newYear;
     this.changeMonthView();
   };
 
@@ -357,54 +415,50 @@
     ];
 
     $domArr.forEach(function ($el) {
-      $el.style.display = flag ? 'block' : 'none';
+      $el.style.display = flag ? '' : 'none';
     });
   };
 
   DatePicker.prototype.changeDateView = function () {
-    if (!this.changeView(0)) {
-      return;
-    }
-    this.changeDateTableHeaderView();
-    this.toggleMonthBtnView(true);
+    this.changeView(0);
+    this.renderForShowStatus();
   };
 
   DatePicker.prototype.changeDateTableHeaderView = function () {
+    if (!this.isDateView()) {
+      return;
+    }
     this.$showYear.innerHTML = this.state.year + '年';
     this.$showMonth.innerHTML = pad(this.state.month, '0', 2) + '月';
   };
 
   DatePicker.prototype.changeMonthView = function () {
-    if (!this.changeView(1)) {
-      return;
-    }
-    this.changeMonthTableHeaderView();
-    this.toggleMonthBtnView(false);
+    this.changeView(1);
+    this.renderForShowStatus();
   };
 
   DatePicker.prototype.changeMonthTableHeaderView = function () {
+    if (!this.isMonthView()) {
+      return;
+    }
     this.$showYear.innerHTML = this.state.year + ' 年';
   };
 
   DatePicker.prototype.changeYearView = function () {
-    if (!this.changeView(2)) {
-      return;
-    }
-    this.changeYearTableHeaderView();
-    this.toggleMonthBtnView(false);
+    this.changeView(2);
+    this.renderForShowStatus();
   };
 
   DatePicker.prototype.changeYearTableHeaderView = function () {
+    if (!this.isYearView()) {
+      return;
+    }
     var yearData = this.state.yearData;
     var minYear = yearData[0], maxYear = yearData[yearData.length - 1];
     this.$showYear.innerHTML = minYear + ' 年 - ' + maxYear + ' 年'
   };
 
   DatePicker.prototype.changeView = function (showStatus) {
-    if (this.state.showStatus === showStatus) {
-      return false;
-    }
-
     this.state.showStatus = showStatus;
 
     var $domArr = [
@@ -414,8 +468,6 @@
     $domArr.forEach(function ($el, index) {
       $el.style.display = index === showStatus ? '' : 'none';
     });
-
-    return true;
   };
 
   DatePicker.prototype.doPrevMonth = function () {
@@ -423,8 +475,7 @@
       return;
     }
     this.state.month -= 1;
-    this.initDateData();
-    this.renderDateData();
+    this.renderForShowStatus();
   };
 
   DatePicker.prototype.doNextMonth = function () {
@@ -432,8 +483,7 @@
       return;
     }
     this.state.month += 1;
-    this.initDateData();
-    this.renderDateData();
+    this.renderForShowStatus();
   };
 
   DatePicker.prototype.doPrevYear = function () {
@@ -447,7 +497,7 @@
         this.state.year -= 10;
         break;
     }
-    this.renderOfShowStatus();
+    this.renderForShowStatus();
   };
 
   DatePicker.prototype.doNextYear = function () {
@@ -461,23 +511,26 @@
         this.state.year += 10;
         break;
     }
-    this.renderOfShowStatus();
+    this.renderForShowStatus();
   };
 
-  DatePicker.prototype.renderOfShowStatus = function () {
+  DatePicker.prototype.renderForShowStatus = function () {
     var showStatus = this.state.showStatus;
     switch (showStatus) {
       case 0:
         this.initDateData();
-        this.renderDateData();
+        this.toggleMonthBtnView(true);
+        this.reRenderDateData();
         break;
       case 1:
         this.initMonthData();
-        this.renderMonthData();
+        this.toggleMonthBtnView(false);
+        this.reRenderMonthData();
         break;
       case 2:
         this.initYearData();
-        this.renderYearData();
+        this.toggleMonthBtnView(false);
+        this.reRenderYearData();
         break;
     }
   };

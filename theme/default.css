@@ -89,6 +89,9 @@
 .tiny-datepicker__table td.available:hover {
   color: #409eff;
 }
+.tiny-datepicker__table span:hover {
+  color: #409eff;
+}
 
 .tiny-datepicker__table td.prev-month {
   color: #c0c4cc;
