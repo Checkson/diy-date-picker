@@ -14,11 +14,11 @@
     module.exports = factory();
   } else if (globalObj) {
     // register tiny-datepicker
-    globalObj.tinyDatepicker = factory();
+    globalObj.tinyDatePicker = factory();
     // if exist amd
     if (typeof define === 'function' && define.amd) {
       define([], function () {
-        return globalObj.tinyDatepicker;
+        return globalObj.tinyDatePicker;
       });
     }
   }
@@ -199,7 +199,7 @@
     var thisYear = this.state.year;
     var countOfYear = 10;
     var minYear = thisYear - (thisYear % countOfYear);
-      
+
     // clear year data
     this.clearYearData();
 
@@ -234,7 +234,7 @@
     var $datePicker = document.createElement('div');
     $datePicker.className = 'tiny-datepicker__wrapper';
     $datePicker.innerHTML = $view.join('');
-    
+
     // init dom for datepicker
     this.$datePicker = $datePicker;
     this.$showYear = this.getDom('.tiny-datepicker__show-year');
@@ -336,7 +336,7 @@
   DatePicker.prototype.renderYearData = function () {
     var $view = [];
     var yearData = this.state.yearData;
-    var countOfRow = 4, amount = 12;
+    var countOfRow = 4; var amount = 12;
 
     for (var i = 0; i < amount; i++) {
       if (i % countOfRow === 0) {
@@ -349,7 +349,7 @@
         $view.push('</tr>');
       }
     }
-    
+
     this.$yearTable.querySelector('tbody').innerHTML = $view.join('');
     this.changeYearTableHeaderView();
   };
@@ -364,7 +364,7 @@
     }
     this.changeYearTableHeaderView();
   };
-   
+
   DatePicker.prototype.initEvent = function () {
     this.$showMonth.addEventListener('click', this.changeMonthView.bind(this));
     this.$showYear.addEventListener('click', this.changeYearView.bind(this));
@@ -394,7 +394,8 @@
     this.state.date = newDate;
     this.state.month = newMonth;
     this.state.year = newYear;
-    console.log(newYear + '-' + newMonth + '-' + newDate);
+    var value = newYear + '-' + newMonth + '-' + newDate;
+    this.$el.value = value;
   };
 
   DatePicker.prototype.chooseMonth = function (index) {
@@ -454,8 +455,8 @@
       return;
     }
     var yearData = this.state.yearData;
-    var minYear = yearData[0], maxYear = yearData[yearData.length - 1];
-    this.$showYear.innerHTML = minYear + ' 年 - ' + maxYear + ' 年'
+    var minYear = yearData[0]; var maxYear = yearData[yearData.length - 1];
+    this.$showYear.innerHTML = minYear + ' 年 - ' + maxYear + ' 年';
   };
 
   DatePicker.prototype.changeView = function (showStatus) {
@@ -464,7 +465,7 @@
     var $domArr = [
       this.$dateTable, this.$monthTable, this.$yearTable
     ];
-    
+
     $domArr.forEach(function ($el, index) {
       $el.style.display = index === showStatus ? '' : 'none';
     });
@@ -489,13 +490,13 @@
   DatePicker.prototype.doPrevYear = function () {
     var showStatus = this.state.showStatus;
     switch (showStatus) {
-      case 0: // date view
-      case 1: // month view
-        this.state.year -= 1;
-        break;
-      case 2: // year view
-        this.state.year -= 10;
-        break;
+    case 0: // date view
+    case 1: // month view
+      this.state.year -= 1;
+      break;
+    case 2: // year view
+      this.state.year -= 10;
+      break;
     }
     this.renderForShowStatus();
   };
@@ -503,13 +504,13 @@
   DatePicker.prototype.doNextYear = function () {
     var showStatus = this.state.showStatus;
     switch (showStatus) {
-      case 0: // date view
-      case 1: // month view
-        this.state.year += 1;
-        break;
-      case 2: // year view
-        this.state.year += 10;
-        break;
+    case 0: // date view
+    case 1: // month view
+      this.state.year += 1;
+      break;
+    case 2: // year view
+      this.state.year += 10;
+      break;
     }
     this.renderForShowStatus();
   };
@@ -517,21 +518,21 @@
   DatePicker.prototype.renderForShowStatus = function () {
     var showStatus = this.state.showStatus;
     switch (showStatus) {
-      case 0:
-        this.initDateData();
-        this.toggleMonthBtnView(true);
-        this.reRenderDateData();
-        break;
-      case 1:
-        this.initMonthData();
-        this.toggleMonthBtnView(false);
-        this.reRenderMonthData();
-        break;
-      case 2:
-        this.initYearData();
-        this.toggleMonthBtnView(false);
-        this.reRenderYearData();
-        break;
+    case 0:
+      this.initDateData();
+      this.toggleMonthBtnView(true);
+      this.reRenderDateData();
+      break;
+    case 1:
+      this.initMonthData();
+      this.toggleMonthBtnView(false);
+      this.reRenderMonthData();
+      break;
+    case 2:
+      this.initYearData();
+      this.toggleMonthBtnView(false);
+      this.reRenderYearData();
+      break;
     }
   };
 
@@ -559,6 +560,12 @@
     return this.$datePicker.querySelector(selector);
   };
 
+  DatePicker.prototype.hide = function () {
+    if (this.$datePicker) {
+      this.$datePicker.style.display = 'none';
+    }
+  };
+
   //  ---------------- tiny datepicker  ----------------
   var tinyDatePicker = {};
 
@@ -568,8 +575,6 @@
       new DatePicker(elements[0], options);
     }
   };
-
-  new DatePicker();
 
   return tinyDatePicker;
 }));
