@@ -61,12 +61,39 @@
     return new Date(year, month, 1);
   }
 
-  //  ---------------- constant  ----------------
-  var TD_CLASS_LIST = ['available', 'prev-month', 'next-month'];
+  // reference: https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/assign
+  function merge (target, varArgs) {
+    if (target == null) { // TypeError if undefined or null
+      throw new TypeError('Cannot convert undefined or null to object');
+    }
+
+    var to = Object(target);
+
+    for (var i = 1; i < arguments.length; i++) {
+      var nextSource = arguments[i];
+      if (nextSource != null) {
+        for (var nextKey in nextSource) {
+          if (Object.prototype.hasOwnProperty.call(nextSource, nextKey)) {
+            to[nextKey] = nextSource[nextKey];
+          }
+        }
+      }
+    }
+
+    return to;
+  }
+
+  function getScroll (type) {
+    var _type = 'scroll' + type[0].toUpperCase() + type.slice(1);
+    if (document.documentElement && document.documentElement[_type]) {
+      return document.documentElement[_type];
+    }
+    return document.body[_type];
+  }
 
   //  ---------------- datepicker  ----------------
-  function DatePicker (el, options) {
-    this.$el = el;
+  function DatePicker ($input, options) {
+    this.$input = $input;
     this.$datePicker = null;
     this.state = {
       isVisible: false, // visible or invisible
@@ -81,12 +108,29 @@
       month: null,
       year: null
     };
+    this.initOptions(options);
     this.register();
   }
 
+  DatePicker.prototype.initOptions = function (options) {
+    var defaults = {
+      value: '',
+      readonly: false,
+      disabled: false,
+      editable: false,
+      clearable: false,
+      placeholder: '',
+      name: '',
+      format: 'yyyy-MM-dd',
+      valueFormat: 'yyyy-MM-dd',
+      language: ''
+    };
+    this.settings = merge(defaults, options);
+  };
+
   DatePicker.prototype.register = function () {
     // bind event for show datepicker
-    this.$el.addEventListener('focus', this.onShow.bind(this));
+    this.$input.addEventListener('focus', this.onShow.bind(this));
     // bind event for hide datepicker
     document.addEventListener('click', this.onHide.bind(this));
   };
@@ -96,22 +140,26 @@
       return;
     }
     if (this.state.isMounted) {
+      this.renderForShowStatus();
       this.show();
     } else {
       this.init();
     }
+    this.place();
   };
 
   DatePicker.prototype.onHide = function (event) {
     var $target = event.target;
+    console.log($target);
     if (this.state.isVisible && this.isValidClick($target)) {
+      console.log('进来了！');
       this.hide();
     }
   };
 
   DatePicker.prototype.show = function () {
     if (this.$datePicker) {
-      this.$datePicker.style.display = '';
+      this.$datePicker.style.display = 'block';
       this.state.isVisible = true;
     }
   };
@@ -121,6 +169,17 @@
       this.$datePicker.style.display = 'none';
       this.state.isVisible = false;
     }
+  };
+
+  DatePicker.prototype.place = function () {
+    var inputRect = this.$input.getBoundingClientRect();
+    var datepickerRect = this.$datePicker.getBoundingClientRect();
+
+    var scrollTop = getScroll('top');
+    var scrollLeft = getScroll('left');
+
+    this.$datePicker.style.top = inputRect.top + inputRect.height + scrollTop + 'px';
+    this.$datePicker.style.left = inputRect.left + scrollLeft + 'px';
   };
 
   DatePicker.prototype.init = function () {
@@ -323,6 +382,7 @@
     var $view = [];
     var dateData = this.state.dateData;
     var countOfRow = 7;
+    var TD_CLASS_LIST = ['available', 'prev-month', 'next-month'];
 
     for (var i = 0, len = dateData.length; i < len; i++) {
       var data = dateData[i];
@@ -344,6 +404,7 @@
   DatePicker.prototype.reRenderDateData = function () {
     var dateData = this.state.dateData;
     var $tdArr = this.$dateTable.querySelectorAll('tbody tr td');
+    var TD_CLASS_LIST = ['available', 'prev-month', 'next-month'];
     for (var i = 0, len = dateData.length; i < len; i++) {
       var data = dateData[i];
       var $td = $tdArr[i];
@@ -439,7 +500,7 @@
     this.state.month = newMonth;
     this.state.year = newYear;
     var value = newYear + '-' + newMonth + '-' + newDate;
-    this.$el.value = value;
+    this.$input.value = value;
     this.hide();
   };
 
@@ -620,7 +681,7 @@
   DatePicker.prototype.isValidClick = function ($target) {
     var $node = $target;
     while ($node) {
-      if ($node === this.$datePicker || $node === this.$el) {
+      if ($node === this.$datePicker || $node === this.$input) {
         return false;
       }
       $node = $node.parentNode;
