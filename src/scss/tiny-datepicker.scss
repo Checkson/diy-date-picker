@@ -12,6 +12,7 @@ $arrow-hover-color: $primary-color;
 $font-size: 12px;
 $font-title-size: 16px;
 $line-height: 30px;
+$border-radius: 4px;
 $td-height: 30px;
 $td-span-size: 24px;
 $datepicker-width: 300px;
@@ -35,7 +36,7 @@ $x-arrow-border-x: $x-arrow-border * 5 - 1;
     border: 1px solid $border-color;
     background-color: $bg-color;
     box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-    border-radius: 4px;
+    border-radius: $border-radius;
     &:before, &:after {
       content: "";
       position: absolute;
@@ -199,10 +200,45 @@ $x-arrow-border-x: $x-arrow-border * 5 - 1;
   
   &__month-table, &__year-table {
     td {
-      padding: 10px 0;
+      padding: 15px 0;
       &.selected span {
         color: $primary-color;
       }
+    }
+  }
+
+  &__footer {
+    position: relative;
+    padding: 6px 10px;
+    text-align: right;
+    font-size: 0;
+    line-height: 1.0;
+    border-top: 1px solid $border-color;
+    background-color: $bg-gray-color;
+    &-btn {
+      display: inline-block;
+      border: 0;
+      outline: 0;
+      margin: 0;
+      background: transparent;
+      font-size: $font-size;
+      transition: ease-in-out .1s;
+      cursor: pointer;
+    }
+  }
+
+  &__now-btn {
+    color: $primary-color;
+    padding: 5px 15px;
+  }
+
+  &__clear-btn {
+    border: 1px solid $border-color;
+    padding: 5px 15px;
+    border-radius: $border-radius;
+    &:hover {
+      border-color: $primary-color;
+      color: $primary-color;
     }
   }
 }

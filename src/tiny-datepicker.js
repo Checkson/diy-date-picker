@@ -131,7 +131,6 @@
   DatePicker.prototype.register = function () {
     // bind event for input
     this.$input.addEventListener('focus', this.onShow.bind(this));
-    this.$input.addEventListener('blur', this.hide.bind(this));
     // bind event for hide datepicker
     document.addEventListener('click', this.onHide.bind(this));
   };
@@ -356,6 +355,10 @@
       '<table class="tiny-datepicker__table tiny-datepicker__year-table">',
       '<tbody></tbody>',
       '</table>',
+      '</div>',
+      '<div class="tiny-datepicker__footer">',
+      '<button class="tiny-datepicker__footer-btn tiny-datepicker__now-btn"><span>此刻</span></button>',
+      '<button class="tiny-datepicker__footer-btn tiny-datepicker__clear-btn"><span>清除</span></button>',
       '</div>'];
 
     var $datePicker = document.createElement('div');
@@ -373,6 +376,9 @@
     this.$prevMonth = this.getDom('.tiny-datepicker__prev-month');
     this.$nextMonth = this.getDom('.tiny-datepicker__next-month');
     this.$nextYear = this.getDom('.tiny-datepicker__next-year');
+    this.$datePickerFooter = this.getDom('.tiny-datepicker__footer');
+    this.$nowBtn = this.getDom('.tiny-datepicker__now-btn');
+    this.$clearBtn = this.getDom('.tiny-datepicker__clear-btn');
   };
 
   DatePicker.prototype.render = function () {
@@ -587,6 +593,8 @@
     this.$prevMonth.addEventListener('click', this.doPrevMonth.bind(this));
     this.$nextMonth.addEventListener('click', this.doNextMonth.bind(this));
     this.$nextYear.addEventListener('click', this.doNextYear.bind(this));
+    this.$nowBtn.addEventListener('click', this.setTodayValue.bind(this));
+    this.$clearBtn.addEventListener('click', this.clearValue.bind(this));
     this.initChooseEvent();
   };
 
@@ -768,6 +776,35 @@
       break;
     }
     this.toggleMonthBtnView(showStatus === 0);
+  };
+
+  DatePicker.prototype.setTodayValue = function () {
+    var now = new Date();
+    var year = now.getFullYear();
+    var month = now.getMonth() + 1;
+    var date = now.getDate();
+
+    this.state.year = year;
+    this.state.month = month;
+    this.state.date = date;
+
+    this.value = now;
+
+    this.$input.value = year + '-' + pad(month) + '-' + pad(date);
+
+    this.hide();
+  };
+
+  DatePicker.prototype.clearValue = function () {
+    this.state.year = null;
+    this.state.month = null;
+    this.state.date = null;
+
+    this.value = null;
+
+    this.$input.value = '';
+
+    this.hide();
   };
 
   DatePicker.prototype.isDateView = function () {
