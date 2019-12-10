@@ -24,11 +24,11 @@
   }
 }(function () {
   // ---------------- utils ----------------
-  function pad (str, char, len) {
+  function pad (str) {
     var _str = '' + str;
-    var _len = _str.length;
-    while (_len++ < len) {
-      _str = char + _str;
+    var len = _str.length;
+    while (len++ < 2) {
+      _str = '0' + _str;
     }
     return _str;
   }
@@ -95,6 +95,7 @@
   function DatePicker ($input, options) {
     this.$input = $input;
     this.$datePicker = null;
+    this.value = null;
     this.state = {
       isVisible: false, // visible or invisible
       isMounted: false, // mounted or unmounted
@@ -103,7 +104,6 @@
       dateData: [],
       monthData: [],
       yearData: [],
-      day: null,
       date: null,
       month: null,
       year: null
@@ -129,8 +129,9 @@
   };
 
   DatePicker.prototype.register = function () {
-    // bind event for show datepicker
+    // bind event for input
     this.$input.addEventListener('focus', this.onShow.bind(this));
+    this.$input.addEventListener('blur', this.hide.bind(this));
     // bind event for hide datepicker
     document.addEventListener('click', this.onHide.bind(this));
   };
@@ -140,6 +141,7 @@
       return;
     }
     if (this.state.isMounted) {
+      this.changeView(0);
       this.renderForShowStatus();
       this.show();
     } else {
@@ -189,17 +191,27 @@
     var winWidth = window.innerWidth;
     var winHeight = window.innerHeight;
 
-    if (winHeight < inputTop + datepickerHeight) {
-      this.$datePicker.style.top = inputTop - datepickerHeight - inputHeight + scrollTop + 'px';
+    var arrowSize = 8;
+
+    var type = '';
+
+    if (winHeight < inputTop + datepickerHeight + arrowSize) {
+      this.$datePicker.style.top = inputTop - datepickerHeight + scrollTop - arrowSize + 'px';
+      type = 'top';
     } else {
-      this.$datePicker.style.top = inputTop + inputHeight + scrollTop + 'px';
+      this.$datePicker.style.top = inputTop + inputHeight + scrollTop + arrowSize + 'px';
+      type = 'bottom';
     }
 
     if (winWidth < inputLeft + datepickerWidth) {
       this.$datePicker.style.left = inputLeft - datepickerWidth + inputWidth + scrollLeft + 'px';
+      type += '-right';
     } else {
       this.$datePicker.style.left = inputLeft + scrollLeft + 'px';
+      type += '-left';
     }
+
+    this.$datePicker.className = 'tiny-datepicker__wrapper tiny-datepicker__' + type;
   };
 
   DatePicker.prototype.init = function () {
@@ -260,39 +272,34 @@
           day: i,
           date: dayCountOfLastMonth + i - 6,
           month: lastMonth,
-          year: lastMonthOfYear,
-          classIndex: 1
+          year: lastMonthOfYear
         });
       }
       rowCountOfDisplay--;
     }
 
     for (var j = 0; j < dayCountOfWeek * rowCountOfDisplay; j++) {
-      var date, month, Year;
-      var classIndex = 0; // 0 -> available, 1 -> prev-month, 2 -> next-month
+      var date, month, year;
 
       if (j < firstDayOfThisMonth) { // last month
         date = dayCountOfLastMonth - firstDayOfThisMonth + j + 1;
         month = lastMonth;
-        Year = lastMonthOfYear;
-        classIndex = 1;
+        year = lastMonthOfYear;
       } else if (j > dayCountOfThisMonth + firstDayOfThisMonth - 1) { // next month
         date = j - dayCountOfThisMonth - firstDayOfThisMonth + 1;
         month = nextMonth;
-        Year = nextMonthOfYear;
-        classIndex = 2;
+        year = nextMonthOfYear;
       } else { // this month
         date = j - firstDayOfThisMonth + 1;
         month = thisMonth;
-        Year = thisYear;
+        year = thisYear;
       }
 
       this.state.dateData.push({
         day: j % dayCountOfWeek,
         date: date,
         month: month,
-        year: Year,
-        classIndex: classIndex
+        year: year
       });
     }
 
@@ -402,16 +409,16 @@
     var $view = [];
     var dateData = this.state.dateData;
     var countOfRow = 7;
-    var TD_CLASS_LIST = ['available', 'prev-month', 'next-month'];
 
     for (var i = 0, len = dateData.length; i < len; i++) {
       var data = dateData[i];
+      var className = this.getDateTdClass(data);
 
       if (i % countOfRow === 0) {
         $view.push('<tr>');
       }
 
-      $view.push('<td class="' + TD_CLASS_LIST[data.classIndex] + '"><span>' + data.date + '</span></td>');
+      $view.push('<td class="' + className + '"><span>' + data.date + '</span></td>');
 
       if (i % countOfRow === countOfRow - 1) {
         $view.push('</tr>');
@@ -424,14 +431,43 @@
   DatePicker.prototype.reRenderDateData = function () {
     var dateData = this.state.dateData;
     var $tdArr = this.$dateTable.querySelectorAll('tbody tr td');
-    var TD_CLASS_LIST = ['available', 'prev-month', 'next-month'];
+
     for (var i = 0, len = dateData.length; i < len; i++) {
       var data = dateData[i];
       var $td = $tdArr[i];
-      $td.className = TD_CLASS_LIST[data.classIndex];
+      $td.className = this.getDateTdClass(data);
       $td.innerHTML = '<span>' + data.date + '</span>';
     }
+
     this.changeDateTableHeaderView();
+  };
+
+  DatePicker.prototype.getDateTdClass = function (data) {
+    var year = this.state.year;
+    var month = this.state.month;
+    var className = '';
+
+    if (data.month < month && data.year <= year) { // prev-month
+      className = 'prev-month';
+    } else if (data.month === month && data.year === year) { // this month
+      className = 'available';
+      // check if today
+      var today = new Date();
+      if (today.getFullYear() === year && today.getMonth() + 1 === month && today.getDate() === data.date) {
+        className += ' today';
+      }
+      // check if selected
+      if (this.value &&
+          this.value.getFullYear() === year &&
+          this.value.getMonth() + 1 === month &&
+          this.value.getDate() === data.date) {
+        className += ' selected';
+      }
+    } else { // next-month
+      className = 'next-month';
+    }
+
+    return className;
   };
 
   DatePicker.prototype.renderMonthData = function () {
@@ -440,11 +476,13 @@
     var countOfRow = 4;
 
     for (var i = 0, len = monthData.length; i < len; i++) {
+      var className = this.getMonthTdClass(monthData[i]);
+
       if (i % countOfRow === 0) {
         $view.push('<tr>');
       }
 
-      $view.push('<td><span>' + monthData[i].label + '</span></td>');
+      $view.push('<td class="' + className + '"><span>' + monthData[i].label + '</span></td>');
 
       if (i % countOfRow === countOfRow - 1) {
         $view.push('</tr>');
@@ -455,8 +493,35 @@
   };
 
   DatePicker.prototype.reRenderMonthData = function () {
-    // view does not need to be changed
+    var monthData = this.state.monthData;
+    var $tdArr = this.$monthTable.querySelectorAll('tbody tr td');
+
+    for (var i = 0, len = monthData.length; i < len; i++) {
+      var $td = $tdArr[i];
+      $td.className = this.getMonthTdClass(monthData[i]);
+    }
+
     this.changeMonthTableHeaderView();
+  };
+
+  DatePicker.prototype.getMonthTdClass = function (data) {
+    var year = this.state.year;
+    var className = 'available';
+    var today = new Date();
+
+    // check if today
+    if (today.getFullYear() === year && today.getMonth() + 1 === data.value) {
+      className += ' today';
+    }
+
+    // check if selected
+    if (this.value &&
+        this.value.getFullYear() === year &&
+        this.value.getMonth() + 1 === data.value) {
+      className += ' selected';
+    }
+
+    return className;
   };
 
   DatePicker.prototype.renderYearData = function () {
@@ -466,11 +531,13 @@
     var amount = 12;
 
     for (var i = 0; i < amount; i++) {
+      var className = this.getYearTdClass(yearData[i]);
+
       if (i % countOfRow === 0) {
         $view.push('<tr>');
       }
 
-      $view.push('<td><span>' + (yearData[i] || '') + '</span></td>');
+      $view.push('<td><span class="' + className + '">' + (yearData[i] || '') + '</span></td>');
 
       if (i % countOfRow === countOfRow - 1) {
         $view.push('</tr>');
@@ -483,12 +550,34 @@
   DatePicker.prototype.reRenderYearData = function () {
     var yearData = this.state.yearData;
     var $tdArr = this.$yearTable.querySelectorAll('tbody tr td');
+
     for (var i = 0, len = yearData.length; i < len; i++) {
       var data = yearData[i];
       var $td = $tdArr[i];
+
+      $td.className = this.getYearTdClass(data);
       $td.innerHTML = '<span>' + data + '</span>';
     }
+
     this.changeYearTableHeaderView();
+  };
+
+  DatePicker.prototype.getYearTdClass = function (data) {
+    var className = 'available';
+    var today = new Date();
+
+    // check if today
+    if (today.getFullYear() === data) {
+      className += ' today';
+    }
+
+    // check if selected
+    if (this.value &&
+        this.value.getFullYear() === data) {
+      className += ' selected';
+    }
+
+    return className;
   };
 
   DatePicker.prototype.initEvent = function () {
@@ -514,14 +603,20 @@
 
   DatePicker.prototype.onChooseDate = function (index) {
     var data = this.state.dateData[index];
+
     var newDate = data.date;
     var newMonth = data.month;
     var newYear = data.year;
+
     this.state.date = newDate;
     this.state.month = newMonth;
     this.state.year = newYear;
-    var value = newYear + '-' + newMonth + '-' + newDate;
+
+    var value = newYear + '-' + pad(newMonth) + '-' + pad(newDate);
+
     this.$input.value = value;
+    this.value = new Date(value);
+
     this.hide();
   };
 
@@ -557,7 +652,7 @@
       return;
     }
     this.$showYear.innerHTML = this.state.year + '年';
-    this.$showMonth.innerHTML = pad(this.state.month, '0', 2) + '月';
+    this.$showMonth.innerHTML = pad(this.state.month) + '月';
   };
 
   DatePicker.prototype.changeMonthView = function () {
