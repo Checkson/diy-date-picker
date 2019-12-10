@@ -150,9 +150,7 @@
 
   DatePicker.prototype.onHide = function (event) {
     var $target = event.target;
-    console.log($target);
     if (this.state.isVisible && this.isValidClick($target)) {
-      console.log('进来了！');
       this.hide();
     }
   };
@@ -175,11 +173,33 @@
     var inputRect = this.$input.getBoundingClientRect();
     var datepickerRect = this.$datePicker.getBoundingClientRect();
 
+    var inputTop = inputRect.top;
+    var inputLeft = inputRect.left;
+    var inputBottom = inputRect.bottom;
+    var inputRight = inputRect.right;
+    var inputWidth = inputRight - inputLeft;
+    var inputHeight = inputBottom - inputTop;
+
+    var datepickerWidth = datepickerRect.right - datepickerRect.left;
+    var datepickerHeight = datepickerRect.bottom - datepickerRect.top;
+
     var scrollTop = getScroll('top');
     var scrollLeft = getScroll('left');
 
-    this.$datePicker.style.top = inputRect.top + inputRect.height + scrollTop + 'px';
-    this.$datePicker.style.left = inputRect.left + scrollLeft + 'px';
+    var winWidth = window.innerWidth;
+    var winHeight = window.innerHeight;
+
+    if (winHeight < inputTop + datepickerHeight) {
+      this.$datePicker.style.top = inputTop - datepickerHeight - inputHeight + scrollTop + 'px';
+    } else {
+      this.$datePicker.style.top = inputTop + inputHeight + scrollTop + 'px';
+    }
+
+    if (winWidth < inputLeft + datepickerWidth) {
+      this.$datePicker.style.left = inputLeft - datepickerWidth + inputWidth + scrollLeft + 'px';
+    } else {
+      this.$datePicker.style.left = inputLeft + scrollLeft + 'px';
+    }
   };
 
   DatePicker.prototype.init = function () {
@@ -442,7 +462,8 @@
   DatePicker.prototype.renderYearData = function () {
     var $view = [];
     var yearData = this.state.yearData;
-    var countOfRow = 4; var amount = 12;
+    var countOfRow = 4;
+    var amount = 12;
 
     for (var i = 0; i < amount; i++) {
       if (i % countOfRow === 0) {
@@ -695,7 +716,7 @@
   tinyDatePicker.init = function (selectors, options) {
     var elements = document.querySelectorAll(selectors);
     for (var i = 0, len = elements.length; i < len; i++) {
-      new DatePicker(elements[0], options);
+      new DatePicker(elements[i], options);
     }
   };
 
