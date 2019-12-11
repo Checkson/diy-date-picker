@@ -89,6 +89,9 @@ $x-arrow-border-x: $x-arrow-border * 5 - 1;
       left: $x-arrow-x;
       border-top: $x-arrow-size solid $bg-color;
     }
+    &.tiny-datepicker__clearable:after {
+      border-top-color: $bg-gray-color;
+    }
   }
 
   &__top-right {
@@ -101,6 +104,9 @@ $x-arrow-border-x: $x-arrow-border * 5 - 1;
       bottom: -$x-arrow-y;
       right: $x-arrow-x;
       border-top: $x-arrow-size solid $bg-color;
+    }
+    &.tiny-datepicker__clearable:after {
+      border-top-color: $bg-gray-color;
     }
   }
 
@@ -233,6 +239,7 @@ $x-arrow-border-x: $x-arrow-border * 5 - 1;
   }
 
   &__clear-btn {
+    color: $text-color;
     border: 1px solid $border-color;
     padding: 5px 15px;
     border-radius: $border-radius;

@@ -62,7 +62,7 @@
   }
 
   // reference: https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/assign
-  function merge (target, varArgs) {
+  function merge (target) {
     if (target == null) { // TypeError if undefined or null
       throw new TypeError('Cannot convert undefined or null to object');
     }
@@ -91,9 +91,23 @@
     return document.body[_type];
   }
 
-  //  ---------------- datepicker  ----------------
+  // ---------------- constants  ----------------
+  var DEFAULTS = {
+    // properties
+    language: 'zh-CN',
+    clearable: false,
+    format: 'yy-MM-dd',
+    valueFormat: '',
+    // events
+    change: function (event) {},
+    blur: function (event) {},
+    focus: function (event) {}
+  };
+
+  // ---------------- datepicker  ----------------
   function DatePicker ($input, options) {
     this.$input = $input;
+    this.options = options;
     this.$datePicker = null;
     this.value = null;
     this.state = {
@@ -108,116 +122,28 @@
       month: null,
       year: null
     };
-    this.initOptions(options);
     this.register();
   }
 
-  DatePicker.prototype.initOptions = function (options) {
-    var defaults = {
-      value: '',
-      readonly: false,
-      disabled: false,
-      editable: false,
-      clearable: false,
-      placeholder: '',
-      name: '',
-      format: 'yyyy-MM-dd',
-      valueFormat: 'yyyy-MM-dd',
-      language: ''
-    };
-    this.settings = merge(defaults, options);
-  };
-
   DatePicker.prototype.register = function () {
     // bind event for input
-    this.$input.addEventListener('focus', this.onShow.bind(this));
+    this.$input.addEventListener('focusin', this.onShow.bind(this));
+    this.$input.addEventListener('click', this.onShow.bind(this));
+    this.$input.addEventListener('keydown', this.handleKeyDown.bind(this));
     // bind event for hide datepicker
     document.addEventListener('click', this.onHide.bind(this));
   };
 
-  DatePicker.prototype.onShow = function () {
-    if (this.state.isVisible) {
-      return;
-    }
-    if (this.state.isMounted) {
-      this.changeView(0);
-      this.renderForShowStatus();
-      this.show();
-    } else {
-      this.init();
-    }
-    this.place();
-  };
-
-  DatePicker.prototype.onHide = function (event) {
-    var $target = event.target;
-    if (this.state.isVisible && this.isValidClick($target)) {
-      this.hide();
-    }
-  };
-
-  DatePicker.prototype.show = function () {
-    if (this.$datePicker) {
-      this.$datePicker.style.display = 'block';
-      this.state.isVisible = true;
-    }
-  };
-
-  DatePicker.prototype.hide = function () {
-    if (this.$datePicker) {
-      this.$datePicker.style.display = 'none';
-      this.state.isVisible = false;
-    }
-  };
-
-  DatePicker.prototype.place = function () {
-    var inputRect = this.$input.getBoundingClientRect();
-    var datepickerRect = this.$datePicker.getBoundingClientRect();
-
-    var inputTop = inputRect.top;
-    var inputLeft = inputRect.left;
-    var inputBottom = inputRect.bottom;
-    var inputRight = inputRect.right;
-    var inputWidth = inputRight - inputLeft;
-    var inputHeight = inputBottom - inputTop;
-
-    var datepickerWidth = datepickerRect.right - datepickerRect.left;
-    var datepickerHeight = datepickerRect.bottom - datepickerRect.top;
-
-    var scrollTop = getScroll('top');
-    var scrollLeft = getScroll('left');
-
-    var winWidth = window.innerWidth;
-    var winHeight = window.innerHeight;
-
-    var arrowSize = 8;
-
-    var type = '';
-
-    if (winHeight < inputTop + datepickerHeight + arrowSize) {
-      this.$datePicker.style.top = inputTop - datepickerHeight + scrollTop - arrowSize + 'px';
-      type = 'top';
-    } else {
-      this.$datePicker.style.top = inputTop + inputHeight + scrollTop + arrowSize + 'px';
-      type = 'bottom';
-    }
-
-    if (winWidth < inputLeft + datepickerWidth) {
-      this.$datePicker.style.left = inputLeft - datepickerWidth + inputWidth + scrollLeft + 'px';
-      type += '-right';
-    } else {
-      this.$datePicker.style.left = inputLeft + scrollLeft + 'px';
-      type += '-left';
-    }
-
-    this.$datePicker.className = 'tiny-datepicker__wrapper tiny-datepicker__' + type;
-  };
-
   DatePicker.prototype.init = function () {
+    this.initOptions();
     this.initData();
     this.initDom();
     this.render();
     this.initEvent();
+  };
+
+  DatePicker.prototype.initOptions = function () {
+    this.settings = merge({}, DEFAULTS, this.options);
   };
 
   DatePicker.prototype.initData = function () {
@@ -263,7 +189,7 @@
     var rowCountOfDisplay = 6;
 
     // clear date data
-    this.clearDateData();
+    this.state.dateData = [];
 
     if (firstDayOfThisMonth === 0) {
       for (var i = dayCountOfWeek - 1; i >= 0; i--) {
@@ -327,7 +253,7 @@
     var minYear = thisYear - (thisYear % countOfYear);
 
     // clear year data
-    this.clearYearData();
+    this.state.yearData = [];
 
     for (var i = 0; i < countOfYear; i++) {
       this.state.yearData.push(minYear + i);
@@ -356,7 +282,7 @@
       '<tbody></tbody>',
       '</table>',
       '</div>',
-      '<div class="tiny-datepicker__footer">',
+      '<div class="tiny-datepicker__footer" style="display: ' + (this.settings.clearable ? 'block' : 'none') + '">',
       '<button class="tiny-datepicker__footer-btn tiny-datepicker__now-btn"><span>此刻</span></button>',
       '<button class="tiny-datepicker__footer-btn tiny-datepicker__clear-btn"><span>清除</span></button>',
       '</div>'];
@@ -379,6 +305,107 @@
     this.$datePickerFooter = this.getDom('.tiny-datepicker__footer');
     this.$nowBtn = this.getDom('.tiny-datepicker__now-btn');
     this.$clearBtn = this.getDom('.tiny-datepicker__clear-btn');
+  };
+
+  DatePicker.prototype.onShow = function () {
+    if (this.state.isVisible) {
+      return;
+    }
+    if (this.state.isMounted) {
+      this.changeView(0);
+      this.renderForShowStatus();
+      this.show();
+    } else {
+      this.init();
+    }
+    this.place();
+  };
+
+  DatePicker.prototype.onHide = function (event) {
+    var $target = event.target;
+    if (this.state.isVisible && this.isValidClick($target)) {
+      this.hide();
+    }
+  };
+
+  DatePicker.prototype.show = function () {
+    if (this.$datePicker) {
+      this.$datePicker.style.display = 'block';
+      this.state.isVisible = true;
+    }
+  };
+
+  DatePicker.prototype.hide = function () {
+    if (this.$datePicker) {
+      this.$datePicker.style.display = 'none';
+      this.state.isVisible = false;
+    }
+  };
+
+  DatePicker.prototype.handleKeyDown = function (event) {
+    var keyCode = event.keyCode;
+    var self = this;
+
+    // ESC
+    if (keyCode === 27) {
+      self.hide();
+    }
+
+    // Tab
+    if (keyCode === 9) {
+      setTimeout(function () {
+        if (this.$input !== document.activeElement) {
+          self.hide();
+        }
+      }, 0);
+    }
+  };
+
+  DatePicker.prototype.place = function () {
+    var inputRect = this.$input.getBoundingClientRect();
+    var datepickerRect = this.$datePicker.getBoundingClientRect();
+
+    var inputTop = inputRect.top;
+    var inputLeft = inputRect.left;
+    var inputBottom = inputRect.bottom;
+    var inputRight = inputRect.right;
+    var inputWidth = inputRight - inputLeft;
+    var inputHeight = inputBottom - inputTop;
+
+    var datepickerWidth = datepickerRect.right - datepickerRect.left;
+    var datepickerHeight = datepickerRect.bottom - datepickerRect.top;
+
+    var scrollTop = getScroll('top');
+    var scrollLeft = getScroll('left');
+
+    var winWidth = window.innerWidth;
+    var winHeight = window.innerHeight;
+
+    var arrowSize = 8;
+
+    var className = 'tiny-datepicker__wrapper tiny-datepicker__';
+
+    if (winHeight < inputTop + datepickerHeight + arrowSize) {
+      this.$datePicker.style.top = inputTop - datepickerHeight + scrollTop - arrowSize + 'px';
+      className += 'top';
+    } else {
+      this.$datePicker.style.top = inputTop + inputHeight + scrollTop + arrowSize + 'px';
+      className += 'bottom';
+    }
+
+    if (winWidth < inputLeft + datepickerWidth) {
+      this.$datePicker.style.left = inputLeft - datepickerWidth + inputWidth + scrollLeft + 'px';
+      className += '-right';
+    } else {
+      this.$datePicker.style.left = inputLeft + scrollLeft + 'px';
+      className += '-left';
+    }
+
+    if (this.settings.clearable) {
+      className += ' tiny-datepicker__clearable';
+    }
+
+    this.$datePicker.className = className;
   };
 
   DatePicker.prototype.render = function () {
@@ -616,16 +643,7 @@
     var newMonth = data.month;
     var newYear = data.year;
 
-    this.state.date = newDate;
-    this.state.month = newMonth;
-    this.state.year = newYear;
-
-    var value = newYear + '-' + pad(newMonth) + '-' + pad(newDate);
-
-    this.$input.value = value;
-    this.value = new Date(value);
-
-    this.hide();
+    this.setValue(newYear, newMonth, newDate);
   };
 
   DatePicker.prototype.onChooseMonth = function (index) {
@@ -784,25 +802,23 @@
     var month = now.getMonth() + 1;
     var date = now.getDate();
 
+    this.setValue(year, month, date);
+  };
+
+  DatePicker.prototype.clearValue = function () {
+    this.setValue(null, null, null);
+  };
+
+  DatePicker.prototype.setValue = function (year, month, date) {
     this.state.year = year;
     this.state.month = month;
     this.state.date = date;
 
-    this.value = now;
+    var value = date ? (year + '-' + pad(month) + '-' + pad(date)) : null;
 
-    this.$input.value = year + '-' + pad(month) + '-' + pad(date);
+    this.value = value ? new Date(value) : null;
 
-    this.hide();
-  };
-
-  DatePicker.prototype.clearValue = function () {
-    this.state.year = null;
-    this.state.month = null;
-    this.state.date = null;
-
-    this.value = null;
-
-    this.$input.value = '';
+    this.$input.value = value || '';
 
     this.hide();
   };
@@ -817,14 +833,6 @@
 
   DatePicker.prototype.isYearView = function () {
     return this.state.showStatus === 2;
-  };
-
-  DatePicker.prototype.clearDateData = function () {
-    this.state.dateData = [];
-  };
-
-  DatePicker.prototype.clearYearData = function () {
-    this.state.yearData = [];
   };
 
   DatePicker.prototype.getDom = function (selector) {
@@ -842,7 +850,7 @@
     return true;
   };
 
-  //  ---------------- tiny datepicker  ----------------
+  // ---------------- tiny datepicker  ----------------
   var tinyDatePicker = {};
 
   tinyDatePicker.init = function (selectors, options) {

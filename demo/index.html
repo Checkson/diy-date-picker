@@ -9,10 +9,13 @@
   <script></script>
 </head>
 <body>
+  <input type="text" class="input"/>
   <input type="text" class="input" id="input"/>
   <script src="../dist/tiny-datepicker.min.js"></script>
   <script>
-    tinyDatePicker.init('input');
+    tinyDatePicker.init('input', {
+      clearable: true
+    });
   </script>
 </body>
 </html>
