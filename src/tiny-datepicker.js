@@ -96,12 +96,13 @@
     // properties
     language: 'zh-CN',
     clearable: false,
-    format: 'yy-MM-dd',
-    valueFormat: '',
-    // events
-    change: function (event) {},
-    blur: function (event) {},
-    focus: function (event) {}
+    format: 'yyyy-mm-dd',
+    zIndex: 2019,
+    startDate: -Infinity,
+    endDate: Infinity,
+    weekStart: 0,
+    datesDisabled: [],
+    templates: []
   };
 
   // ---------------- datepicker  ----------------
@@ -127,7 +128,7 @@
 
   DatePicker.prototype.register = function () {
     // bind event for input
-    this.$input.addEventListener('focusin', this.onShow.bind(this));
+    this.$input.addEventListener('focus', this.onShow.bind(this));
     this.$input.addEventListener('click', this.onShow.bind(this));
     this.$input.addEventListener('keydown', this.handleKeyDown.bind(this));
     // bind event for hide datepicker
@@ -136,6 +137,7 @@
 
   DatePicker.prototype.init = function () {
     this.initOptions();
+    this.initLocale();
     this.initData();
     this.initDom();
     this.render();
@@ -146,6 +148,10 @@
     this.settings = merge({}, DEFAULTS, this.options);
   };
 
+  DatePicker.prototype.initLocale = function () {
+    // pass
+  };
+
   DatePicker.prototype.initData = function () {
     this.initWeekData();
     this.initDateData();
@@ -154,9 +160,16 @@
   };
 
   DatePicker.prototype.initWeekData = function () {
-    this.state.weekData = [
-      '日', '一', '二', '三', '四', '五', '六'
-    ];
+    var weekData = ['日', '一', '二', '三', '四', '五', '六'];
+    // calc week start
+    var weekStart = this.parseWeekStart();
+
+    // calc week data
+    for (var i = 0; i < weekStart; i++) {
+      weekData.push(weekData.shift());
+    }
+
+    this.state.weekData = weekData;
   };
 
   DatePicker.prototype.initDateData = function () {
@@ -188,14 +201,17 @@
     var dayCountOfWeek = 7;
     var rowCountOfDisplay = 6;
 
+    // calc week start
+    var weekStart = this.parseWeekStart();
+
     // clear date data
     this.state.dateData = [];
 
-    if (firstDayOfThisMonth === 0) {
+    if (firstDayOfThisMonth === weekStart) {
       for (var i = dayCountOfWeek - 1; i >= 0; i--) {
         this.state.dateData.unshift({
-          day: i,
-          date: dayCountOfLastMonth + i - 6,
+          day: (i + weekStart) % dayCountOfWeek,
+          date: dayCountOfLastMonth + i - dayCountOfWeek + 1,
           month: lastMonth,
           year: lastMonthOfYear
         });
@@ -203,25 +219,27 @@
       rowCountOfDisplay--;
     }
 
+    var showDayCountOfLastMonth = (dayCountOfWeek - Math.abs(weekStart - firstDayOfThisMonth)) % dayCountOfWeek;
+
     for (var j = 0; j < dayCountOfWeek * rowCountOfDisplay; j++) {
       var date, month, year;
-
-      if (j < firstDayOfThisMonth) { // last month
-        date = dayCountOfLastMonth - firstDayOfThisMonth + j + 1;
+     
+      if (j < showDayCountOfLastMonth) { // last month
+        date = dayCountOfLastMonth - showDayCountOfLastMonth + j + 1;
         month = lastMonth;
         year = lastMonthOfYear;
-      } else if (j > dayCountOfThisMonth + firstDayOfThisMonth - 1) { // next month
-        date = j - dayCountOfThisMonth - firstDayOfThisMonth + 1;
+      } else if (j > dayCountOfThisMonth + showDayCountOfLastMonth - 1) { // next month
+        date = j - dayCountOfThisMonth - showDayCountOfLastMonth + 1;
         month = nextMonth;
         year = nextMonthOfYear;
       } else { // this month
-        date = j - firstDayOfThisMonth + 1;
+        date = j - showDayCountOfLastMonth + 1;
         month = thisMonth;
         year = thisYear;
       }
 
       this.state.dateData.push({
-        day: j % dayCountOfWeek,
+        day: (j + weekStart) % dayCountOfWeek,
         date: date,
         month: month,
         year: year
@@ -318,7 +336,7 @@
     } else {
       this.init();
     }
-    this.place();
+    this.adjustPosition();
   };
 
   DatePicker.prototype.onHide = function (event) {
@@ -361,7 +379,7 @@
     }
   };
 
-  DatePicker.prototype.place = function () {
+  DatePicker.prototype.adjustPosition = function () {
     var inputRect = this.$input.getBoundingClientRect();
     var datepickerRect = this.$datePicker.getBoundingClientRect();
 
@@ -406,6 +424,7 @@
     }
 
     this.$datePicker.className = className;
+    this.$datePicker.style.zIndex = this.settings.zIndex;
   };
 
   DatePicker.prototype.render = function () {
@@ -703,7 +722,8 @@
       return;
     }
     var yearData = this.state.yearData;
-    var minYear = yearData[0]; var maxYear = yearData[yearData.length - 1];
+    var minYear = yearData[0];
+    var maxYear = yearData[yearData.length - 1];
     this.$showYear.innerHTML = minYear + ' 年 - ' + maxYear + ' 年';
   };
 
@@ -823,6 +843,11 @@
     this.hide();
   };
 
+  DatePicker.prototype.parseWeekStart = function () {
+    var weekStart = parseInt(Math.abs(this.settings.weekStart)) % 7;
+    return isNaN(weekStart) ? 0 : weekStart;
+  };
+
   DatePicker.prototype.isDateView = function () {
     return this.state.showStatus === 0;
   };
@@ -853,6 +878,7 @@
   // ---------------- tiny datepicker  ----------------
   var tinyDatePicker = {};
 
+  // initial
   tinyDatePicker.init = function (selectors, options) {
     var elements = document.querySelectorAll(selectors);
     for (var i = 0, len = elements.length; i < len; i++) {
