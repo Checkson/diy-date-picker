@@ -101,8 +101,11 @@
     startDate: -Infinity,
     endDate: Infinity,
     weekStart: 0,
+    daysOfWeekDisabled: [],
+    defaultViewDate: null,
     datesDisabled: [],
-    templates: []
+    templates: [],
+    showWeekDays: true
   };
 
   // ---------------- datepicker  ----------------
@@ -878,12 +881,35 @@
   // ---------------- tiny datepicker  ----------------
   var tinyDatePicker = {};
 
-  // initial
   tinyDatePicker.init = function (selectors, options) {
     var elements = document.querySelectorAll(selectors);
     for (var i = 0, len = elements.length; i < len; i++) {
       new DatePicker(elements[i], options);
     }
+  };
+
+  tinyDatePicker.destroy = function () {
+    // pass
+  };
+
+  tinyDatePicker.show = function () {
+    // pass
+  };
+
+  tinyDatePicker.hide = function () {
+    // pass
+  };
+
+  tinyDatePicker.setDate = function () {
+    // pass
+  };
+
+  tinyDatePicker.getDate = function () {
+    // pass
+  };
+
+  tinyDatePicker.clearDate = function () {
+    // pass
   };
 
   return tinyDatePicker;
