@@ -94,18 +94,18 @@
   // ---------------- constants  ----------------
   var DEFAULTS = {
     // properties
-    language: 'zh-CN',
     clearable: false,
-    format: 'yyyy-mm-dd',
-    zIndex: 2019,
-    startDate: -Infinity,
-    endDate: Infinity,
-    weekStart: 0,
     daysOfWeekDisabled: [],
     defaultViewDate: null,
     datesDisabled: [],
+    endDate: Infinity,
+    format: 'yyyy-mm-dd',
+    language: 'zh-CN',
+    startDate: -Infinity,
+    showWeekDays: true,
     templates: [],
-    showWeekDays: true
+    weekStart: 0,
+    zIndex: 2019
   };
 
   // ---------------- datepicker  ----------------
@@ -446,6 +446,11 @@
   };
 
   DatePicker.prototype.renderWeekData = function () {
+    // if need to hide
+    if (!this.settings.showWeekDays) {
+      return;
+    }
+
     var $view = [];
     var weekData = this.state.weekData;
 

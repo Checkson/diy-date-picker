@@ -24,6 +24,18 @@ const uglifyJsTask = () => {
     }));
 };
 
+// uglify locale task
+const uglifyLocaleTask = () => {
+  return src('src/locale/*.js')
+    .pipe(uglify())
+    .pipe(rename({ extname: '.min.js' }))
+    .pipe(dest('dist/locale/'))
+    .pipe(connect.reload())
+    .pipe(notify({
+      message: 'Uglify locale task has finished!'
+    }));
+};
+
 // parse sass and minify css
 const parseSassAndMinifyCssTask = () => {
   return src('src/scss/*.scss')
@@ -49,7 +61,8 @@ const startWebServerTask = (cb) => {
 // watch task
 const watchTask = (cb) => {
   watch('src/scss/*.scss', parseSassAndMinifyCssTask);
-  watch(['src/locale/*.js', 'src/*.js'], uglifyJsTask);
+  watch(['src/*.js'], uglifyJsTask);
+  watch(['src/locale/*.js'], uglifyLocaleTask);
   livereload.listen();
   watch(['dist/**', 'theme/**']).on('change', livereload.changed);
   startWebServerTask(cb);
@@ -57,7 +70,7 @@ const watchTask = (cb) => {
 };
 
 // default task
-const defaultTask = parallel(uglifyJsTask, parseSassAndMinifyCssTask);
+const defaultTask = parallel(uglifyJsTask, parseSassAndMinifyCssTask, uglifyLocaleTask);
 
 // export watch task
 exports.watch = watchTask;
