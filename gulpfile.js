@@ -14,25 +14,13 @@ const connect = require('gulp-connect');
 
 // uglify JavaScript task
 const uglifyJsTask = () => {
-  return src('src/*.js')
+  return src(['src/*.js', 'src/**/*.js'])
     .pipe(uglify())
     .pipe(rename({ extname: '.min.js' }))
     .pipe(dest('dist/'))
     .pipe(connect.reload())
     .pipe(notify({
       message: 'Uglify JavaScript task has finished!'
-    }));
-};
-
-// uglify locale task
-const uglifyLocaleTask = () => {
-  return src('src/locale/*.js')
-    .pipe(uglify())
-    .pipe(rename({ extname: '.min.js' }))
-    .pipe(dest('dist/locale/'))
-    .pipe(connect.reload())
-    .pipe(notify({
-      message: 'Uglify locale task has finished!'
     }));
 };
 
@@ -62,7 +50,6 @@ const startWebServerTask = (cb) => {
 const watchTask = (cb) => {
   watch('src/scss/*.scss', parseSassAndMinifyCssTask);
   watch(['src/*.js'], uglifyJsTask);
-  watch(['src/locale/*.js'], uglifyLocaleTask);
   livereload.listen();
   watch(['dist/**', 'theme/**']).on('change', livereload.changed);
   startWebServerTask(cb);
@@ -70,7 +57,7 @@ const watchTask = (cb) => {
 };
 
 // default task
-const defaultTask = parallel(uglifyJsTask, parseSassAndMinifyCssTask, uglifyLocaleTask);
+const defaultTask = parallel(uglifyJsTask, parseSassAndMinifyCssTask);
 
 // export watch task
 exports.watch = watchTask;
