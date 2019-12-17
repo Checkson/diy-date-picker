@@ -100,13 +100,16 @@
     datesDisabled: [],
     endDate: Infinity,
     format: 'yyyy-mm-dd',
-    language: 'zh-CN',
+    lang: 'zh-CN',
     startDate: -Infinity,
     showWeekDays: true,
     templates: [],
+    valueFormat: 'timestamp',
     weekStart: 0,
     zIndex: 2019
   };
+
+  var VALID_FORMAT = /dd?|DD?|mm?|MM?|yy(?:yy)?/g;
 
   // ---------------- datepicker  ----------------
   function DatePicker ($input, options) {
@@ -140,7 +143,6 @@
 
   DatePicker.prototype.init = function () {
     this.initOptions();
-    this.initLocale();
     this.initData();
     this.initDom();
     this.render();
@@ -151,10 +153,6 @@
     this.settings = merge({}, DEFAULTS, this.options);
   };
 
-  DatePicker.prototype.initLocale = function () {
-    // pass
-  };
-
   DatePicker.prototype.initData = function () {
     this.initWeekData();
     this.initDateData();
@@ -163,7 +161,7 @@
   };
 
   DatePicker.prototype.initWeekData = function () {
-    var weekData = ['日', '一', '二', '三', '四', '五', '六'];
+    var weekData = this.getI18n().daysMin;
     // calc week start
     var weekStart = this.parseWeekStart();
 
@@ -254,11 +252,7 @@
   };
 
   DatePicker.prototype.initMonthData = function () {
-    var labels = [
-      '一月', '二月', '三月', '四月',
-      '五月', '六月', '七月', '八月',
-      '九月', '十月', '十一月', '十二月'
-    ];
+    var labels = this.getI18n().months;
 
     this.state.monthData = labels.map(function (item, index) {
       return {
@@ -282,6 +276,11 @@
   };
 
   DatePicker.prototype.initDom = function () {
+    var i18n = this.getI18n();
+    var todayText = i18n.today;
+    var clearText = i18n.clear;
+    var titleExchange = i18n.titleExchange;
+    
     var $view = [
       '<div class="tiny-datepicker__header">',
       '<button class="tiny-datepicker__btn tiny-datepicker__prev-btn tiny-datepicker__prev-year">&lt;&lt;</button>',
@@ -304,9 +303,15 @@
       '</table>',
       '</div>',
       '<div class="tiny-datepicker__footer" style="display: ' + (this.settings.clearable ? 'block' : 'none') + '">',
-      '<button class="tiny-datepicker__footer-btn tiny-datepicker__now-btn"><span>此刻</span></button>',
-      '<button class="tiny-datepicker__footer-btn tiny-datepicker__clear-btn"><span>清除</span></button>',
+      '<button class="tiny-datepicker__footer-btn tiny-datepicker__now-btn"><span>' + todayText + '</span></button>',
+      '<button class="tiny-datepicker__footer-btn tiny-datepicker__clear-btn"><span>' + clearText + '</span></button>',
       '</div>'];
+    
+    if (titleExchange) {
+      var $temp = $view[3];
+      $view[3] = $view[4];
+      $view[4] = $temp;
+    }
 
     var $datePicker = document.createElement('div');
     $datePicker.className = 'tiny-datepicker__wrapper';
@@ -704,8 +709,8 @@
     if (!this.isDateView()) {
       return;
     }
-    this.$showYear.innerHTML = this.state.year + '年';
-    this.$showMonth.innerHTML = pad(this.state.month) + '月';
+    this.$showYear.innerHTML = this.formatYear(this.state.year);
+    this.$showMonth.innerHTML = this.formatMonth(this.state.year, this.state.month);
   };
 
   DatePicker.prototype.changeMonthView = function () {
@@ -717,7 +722,7 @@
     if (!this.isMonthView()) {
       return;
     }
-    this.$showYear.innerHTML = this.state.year + ' 年';
+    this.$showYear.innerHTML = this.formatYear(this.state.year);
   };
 
   DatePicker.prototype.changeYearView = function () {
@@ -732,7 +737,7 @@
     var yearData = this.state.yearData;
     var minYear = yearData[0];
     var maxYear = yearData[yearData.length - 1];
-    this.$showYear.innerHTML = minYear + ' 年 - ' + maxYear + ' 年';
+    this.$showYear.innerHTML = this.formatYear(minYear) + ' - ' + this.formatYear(maxYear);
   };
 
   DatePicker.prototype.changeView = function (showStatus) {
@@ -842,13 +847,76 @@
     this.state.month = month;
     this.state.date = date;
 
-    var value = date ? (year + '-' + pad(month) + '-' + pad(date)) : null;
+    var _date = null;
+    var i18n = this.getI18n();
 
-    this.value = value ? new Date(value) : null;
+    if (year && month && date) {
+      _date = new Date(year + '-' + pad(month) + '-' + pad(date));
+    }
 
-    this.$input.value = value || '';
+    this.value = _date;
+    this.$input.value = this.formatDate(_date, (this.options.format || i18n.format || this.settings.format));
 
     this.hide();
+  };
+
+  DatePicker.prototype.parseDate = function (formatStr) {
+    var separators = formatStr.replace(VALID_FORMAT, '\0').split('\0');
+    var parts = formatStr.match(VALID_FORMAT);
+    
+    if (!separators || !separators.length || !parts || parts.length === 0){
+      throw new Error("Invalid date format.");
+    }
+
+    return {
+      separators: separators,
+      parts: parts
+    };
+  };
+
+  DatePicker.prototype.formatDate = function (date, formatStr) {
+    // if is timestamp format
+    if (formatStr === 'timestamp') {
+      return date.getTime();
+    }
+
+    var format = this.parseDate(formatStr);
+    var i18n = this.getI18n();
+
+    var values = {
+      d: date.getDate(),
+      dd: pad(date.getDate()),
+      D: i18n.daysShort[date.getDay()],
+      DD: i18n.days[date.getDay()],
+      m: date.getMonth() + 1,
+      mm: pad(date.getMonth() + 1),
+      M: i18n.monthsShort[date.getMonth()],
+      MM: i18n.months[date.getMonth()],
+      yy: date.getFullYear().toString().substring(2),
+      yyyy: date.getFullYear()
+    };
+
+    var res = [];
+    var seps = format.separators || [];
+
+    for (var i = 0, len = format.parts.length; i <= len; i++){
+      if (seps.length) {
+        res.push(seps.shift());
+      }
+      res.push(values[format.parts[i]]);
+    }
+
+    return res.join('');
+  };
+
+  DatePicker.prototype.formatYear = function (year) {
+    var yearTitle = this.getI18n().yearTitle;
+    return this.formatDate(new Date(year + '-1-2'), yearTitle);
+  };
+
+  DatePicker.prototype.formatMonth = function (year, month) {
+    var monthTitle = this.getI18n().monthTitle;
+    return this.formatDate(new Date(year + '-' + month + '-2'), monthTitle);
   };
 
   DatePicker.prototype.parseWeekStart = function () {
@@ -883,9 +951,32 @@
     return true;
   };
 
+  DatePicker.prototype.getI18n = function () {
+    return tinyDatePicker.langs[this.settings.lang || 'zh-CN'];
+  };
+
   // ---------------- tiny datepicker  ----------------
   var tinyDatePicker = {};
 
+  // i18n
+  tinyDatePicker.langs = {
+    'zh-CN': {
+      days: ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"],
+      daysShort: ["周日", "周一", "周二", "周三", "周四", "周五", "周六"],
+      daysMin: ["日", "一", "二", "三", "四", "五", "六"],
+      months: ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"],
+      monthsShort: ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"],
+      today: "今天",
+      clear: "清除",
+      format: "yyyy-mm-dd",
+      yearTitle: "yyyy年",
+      monthTitle: "mm月",
+      titleExchange: false,
+      weekStart: 0
+    }
+  };
+
+  // init
   tinyDatePicker.init = function (selectors, options) {
     var elements = document.querySelectorAll(selectors);
     for (var i = 0, len = elements.length; i < len; i++) {
