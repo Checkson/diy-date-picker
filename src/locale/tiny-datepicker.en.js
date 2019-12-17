@@ -1,9 +1,9 @@
 /**
- * American English translation for tiny-datepicker
+ * English translation for tiny-datepicker
  * Create by author on 2019-12-17
  */
 ;(function (global) {
-  global.tinyDatePicker.langs['en-UK'] = {
+  global.tinyDatePicker.langs.en = {
     days: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
     daysShort: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
     daysMin: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],

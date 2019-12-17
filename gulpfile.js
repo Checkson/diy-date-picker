@@ -49,7 +49,7 @@ const startWebServerTask = (cb) => {
 // watch task
 const watchTask = (cb) => {
   watch('src/scss/*.scss', parseSassAndMinifyCssTask);
-  watch(['src/*.js'], uglifyJsTask);
+  watch(['src/*.js', 'src/**/*.js'], uglifyJsTask);
   livereload.listen();
   watch(['dist/**', 'theme/**']).on('change', livereload.changed);
   startWebServerTask(cb);

@@ -163,7 +163,7 @@
   DatePicker.prototype.initWeekData = function () {
     var weekData = this.getI18n().daysMin;
     // calc week start
-    var weekStart = this.parseWeekStart();
+    var weekStart = this.getWeekStart();
 
     // calc week data
     for (var i = 0; i < weekStart; i++) {
@@ -203,7 +203,7 @@
     var rowCountOfDisplay = 6;
 
     // calc week start
-    var weekStart = this.parseWeekStart();
+    var weekStart = this.getWeekStart();
 
     // clear date data
     this.state.dateData = [];
@@ -224,7 +224,7 @@
 
     for (var j = 0; j < dayCountOfWeek * rowCountOfDisplay; j++) {
       var date, month, year;
-     
+
       if (j < showDayCountOfLastMonth) { // last month
         date = dayCountOfLastMonth - showDayCountOfLastMonth + j + 1;
         month = lastMonth;
@@ -252,7 +252,7 @@
   };
 
   DatePicker.prototype.initMonthData = function () {
-    var labels = this.getI18n().months;
+    var labels = this.getI18n().monthsShort;
 
     this.state.monthData = labels.map(function (item, index) {
       return {
@@ -280,7 +280,7 @@
     var todayText = i18n.today;
     var clearText = i18n.clear;
     var titleExchange = i18n.titleExchange;
-    
+
     var $view = [
       '<div class="tiny-datepicker__header">',
       '<button class="tiny-datepicker__btn tiny-datepicker__prev-btn tiny-datepicker__prev-year">&lt;&lt;</button>',
@@ -306,7 +306,7 @@
       '<button class="tiny-datepicker__footer-btn tiny-datepicker__now-btn"><span>' + todayText + '</span></button>',
       '<button class="tiny-datepicker__footer-btn tiny-datepicker__clear-btn"><span>' + clearText + '</span></button>',
       '</div>'];
-    
+
     if (titleExchange) {
       var $temp = $view[3];
       $view[3] = $view[4];
@@ -848,14 +848,13 @@
     this.state.date = date;
 
     var _date = null;
-    var i18n = this.getI18n();
 
     if (year && month && date) {
       _date = new Date(year + '-' + pad(month) + '-' + pad(date));
     }
 
     this.value = _date;
-    this.$input.value = this.formatDate(_date, (this.options.format || i18n.format || this.settings.format));
+    this.$input.value = this.formatDate(_date, this.getFinalValue('format'));
 
     this.hide();
   };
@@ -863,9 +862,9 @@
   DatePicker.prototype.parseDate = function (formatStr) {
     var separators = formatStr.replace(VALID_FORMAT, '\0').split('\0');
     var parts = formatStr.match(VALID_FORMAT);
-    
-    if (!separators || !separators.length || !parts || parts.length === 0){
-      throw new Error("Invalid date format.");
+
+    if (!separators || !separators.length || !parts || parts.length === 0) {
+      throw new Error('Invalid date format.');
     }
 
     return {
@@ -875,6 +874,9 @@
   };
 
   DatePicker.prototype.formatDate = function (date, formatStr) {
+    if (!date) {
+      return date;
+    }
     // if is timestamp format
     if (formatStr === 'timestamp') {
       return date.getTime();
@@ -899,7 +901,7 @@
     var res = [];
     var seps = format.separators || [];
 
-    for (var i = 0, len = format.parts.length; i <= len; i++){
+    for (var i = 0, len = format.parts.length; i <= len; i++) {
       if (seps.length) {
         res.push(seps.shift());
       }
@@ -919,8 +921,8 @@
     return this.formatDate(new Date(year + '-' + month + '-2'), monthTitle);
   };
 
-  DatePicker.prototype.parseWeekStart = function () {
-    var weekStart = parseInt(Math.abs(this.settings.weekStart)) % 7;
+  DatePicker.prototype.getWeekStart = function () {
+    var weekStart = parseInt(Math.abs(this.getFinalValue('weekStart'))) % 7;
     return isNaN(weekStart) ? 0 : weekStart;
   };
 
@@ -955,24 +957,35 @@
     return tinyDatePicker.langs[this.settings.lang || 'zh-CN'];
   };
 
+  DatePicker.prototype.getFinalValue = function (key) {
+    var i18n = this.getI18n();
+    if (this.options[key] != null) {
+      return this.options[key];
+    }
+    if (i18n[key] != null) {
+      return i18n[key];
+    }
+    return this.settings[key];
+  };
+
   // ---------------- tiny datepicker  ----------------
   var tinyDatePicker = {};
 
   // i18n
   tinyDatePicker.langs = {
     'zh-CN': {
-      days: ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"],
-      daysShort: ["周日", "周一", "周二", "周三", "周四", "周五", "周六"],
-      daysMin: ["日", "一", "二", "三", "四", "五", "六"],
-      months: ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"],
-      monthsShort: ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"],
-      today: "今天",
-      clear: "清除",
-      format: "yyyy-mm-dd",
-      yearTitle: "yyyy年",
-      monthTitle: "mm月",
+      days: ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'],
+      daysShort: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
+      daysMin: ['日', '一', '二', '三', '四', '五', '六'],
+      months: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+      monthsShort: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+      today: '今天',
+      clear: '清除',
+      format: 'yyyy-mm-dd',
+      yearTitle: 'yyyy年',
+      monthTitle: 'mm月',
       titleExchange: false,
-      weekStart: 0
+      weekStart: 1
     }
   };
 
