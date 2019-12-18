@@ -107,7 +107,7 @@
   // ---------------- datepicker  ----------------
   function DatePicker ($input, options) {
     this.$input = $input;
-    this.options = options;
+    this.options = options || {};
     this.$datePicker = null;
     this.value = null;
     this.state = {
