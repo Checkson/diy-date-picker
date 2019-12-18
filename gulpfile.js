@@ -9,7 +9,7 @@ const livereload = require('gulp-livereload');
 const uglify = require('gulp-uglify');
 const rename = require('gulp-rename');
 const sass = require('gulp-sass');
-const minify = require('gulp-minify-css');
+const cleanCSS = require('gulp-clean-css');
 const connect = require('gulp-connect');
 
 // uglify JavaScript task
@@ -28,7 +28,7 @@ const uglifyJsTask = () => {
 const parseSassAndMinifyCssTask = () => {
   return src('src/scss/*.scss')
     .pipe(sass())
-    .pipe(minify())
+    .pipe(cleanCSS())
     .pipe(rename({ extname: '.min.css' }))
     .pipe(dest('theme'))
     .pipe(connect.reload())
