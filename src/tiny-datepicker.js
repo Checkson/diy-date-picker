@@ -93,7 +93,6 @@
 
   // ---------------- constants  ----------------
   var DEFAULTS = {
-    // properties
     clearable: false,
     daysOfWeekDisabled: [],
     defaultViewDate: null,
@@ -104,7 +103,6 @@
     startDate: -Infinity,
     showWeekDays: true,
     templates: [],
-    valueFormat: 'timestamp',
     weekStart: 0,
     zIndex: 2019
   };
@@ -532,6 +530,11 @@
       className = 'next-month';
     }
 
+    // check if day of week disabled
+    if (this.settings.daysOfWeekDisabled.indexOf(data.day) > -1) {
+      className += ' disabled';
+    }
+
     return className;
   };
 
@@ -663,12 +666,17 @@
     for (var i = 0, len1 = $elArr.length; i < len1; i++) {
       var $tdArr = $elArr[i].querySelectorAll('tbody tr td');
       for (var j = 0, len2 = $tdArr.length; j < len2; j++) {
-        $tdArr[j].addEventListener('click', this[methodArr[i]].bind(this, j));
+        $tdArr[j].addEventListener('click', this[methodArr[i]].bind(this, j, $tdArr[j]));
       }
     }
   };
 
-  DatePicker.prototype.onChooseDate = function (index) {
+  DatePicker.prototype.onChooseDate = function (index, $el) {
+    // if disabled
+    if ($el.className.search(/\bdisabled\b/) > -1) {
+      return;
+    }
+
     var data = this.state.dateData[index];
 
     var newDate = data.date;

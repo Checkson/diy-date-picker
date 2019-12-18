@@ -171,7 +171,7 @@ $x-arrow-border-x: $x-arrow-border * 5 - 1;
       padding: 2px 0;
       cursor: pointer;
       box-sizing: border-box;
-      &.available:hover {
+      &.available:not(.disabled):hover {
         color: $primary-color;
       }
       &.today span {
@@ -183,6 +183,10 @@ $x-arrow-border-x: $x-arrow-border * 5 - 1;
       }
       &.next-month {
         color: $text-gray-color;
+      }
+      &.disabled {
+        color: $text-gray-color;
+        cursor: default;
       }
     }
   }
