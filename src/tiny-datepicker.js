@@ -95,14 +95,9 @@
   var DEFAULTS = {
     clearable: false,
     daysOfWeekDisabled: [],
-    defaultViewDate: null,
-    datesDisabled: [],
-    endDate: Infinity,
     format: 'yyyy-mm-dd',
     lang: 'zh-CN',
-    startDate: -Infinity,
     showWeekDays: true,
-    templates: [],
     weekStart: 0,
     zIndex: 2019
   };
@@ -867,7 +862,7 @@
     this.hide();
   };
 
-  DatePicker.prototype.parseDate = function (formatStr) {
+  DatePicker.prototype.parseFormat = function (formatStr) {
     var separators = formatStr.replace(VALID_FORMAT, '\0').split('\0');
     var parts = formatStr.match(VALID_FORMAT);
 
@@ -890,7 +885,7 @@
       return date.getTime();
     }
 
-    var format = this.parseDate(formatStr);
+    var format = this.parseFormat(formatStr);
     var i18n = this.getI18n();
 
     var values = {
@@ -1003,30 +998,6 @@
     for (var i = 0, len = elements.length; i < len; i++) {
       new DatePicker(elements[i], options);
     }
-  };
-
-  tinyDatePicker.destroy = function () {
-    // pass
-  };
-
-  tinyDatePicker.show = function () {
-    // pass
-  };
-
-  tinyDatePicker.hide = function () {
-    // pass
-  };
-
-  tinyDatePicker.setDate = function () {
-    // pass
-  };
-
-  tinyDatePicker.getDate = function () {
-    // pass
-  };
-
-  tinyDatePicker.clearDate = function () {
-    // pass
   };
 
   return tinyDatePicker;
