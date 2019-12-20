@@ -31,8 +31,8 @@ $x-arrow-border-x: $x-arrow-border * 5 - 1;
   &__wrapper {
     position: absolute;
     color: $text-color;
+    line-height: normal;
     width: $datepicker-width;
-    // line-height: $line-height;
     border: 1px solid $border-color;
     background-color: $bg-color;
     box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);

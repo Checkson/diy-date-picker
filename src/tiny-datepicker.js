@@ -98,6 +98,7 @@
     format: 'yyyy-mm-dd',
     lang: 'zh-CN',
     showWeekDays: true,
+    templates: null,
     weekStart: 0,
     zIndex: 2019
   };
@@ -270,18 +271,35 @@
 
   DatePicker.prototype.initDom = function () {
     var i18n = this.getI18n();
+
     var todayText = i18n.today;
     var clearText = i18n.clear;
     var titleExchange = i18n.titleExchange;
 
+    var settings = this.settings;
+    var clearable = settings.clearable;
+    var templates = settings.templates;
+
+    var prevYearArrow = '&lt;&lt;';
+    var prevMonthArrow = '&lt;';
+    var nextYearArrow = '&gt;&gt;';
+    var nextMonthArrow = '&gt;';
+
+    if (templates) {
+      prevYearArrow = templates.prevYearArrow || prevYearArrow;
+      prevMonthArrow = templates.prevMonthArrow || prevMonthArrow;
+      nextYearArrow = templates.nextYearArrow || nextYearArrow;
+      nextMonthArrow = templates.nextMonthArrow || nextMonthArrow;
+    }
+
     var $view = [
       '<div class="tiny-datepicker__header">',
-      '<button class="tiny-datepicker__btn tiny-datepicker__prev-btn tiny-datepicker__prev-year">&lt;&lt;</button>',
-      '<button class="tiny-datepicker__btn tiny-datepicker__prev-btn tiny-datepicker__prev-month">&lt;</button>',
+      '<button class="tiny-datepicker__btn tiny-datepicker__prev-btn tiny-datepicker__prev-year">' + prevYearArrow + '</button>',
+      '<button class="tiny-datepicker__btn tiny-datepicker__prev-btn tiny-datepicker__prev-month">' + prevMonthArrow + '</button>',
       '<span class="tiny-datepicker__header-label tiny-datepicker__show-year"></span>',
       '<span class="tiny-datepicker__header-label tiny-datepicker__show-month"></span>',
-      '<button class="tiny-datepicker__btn tiny-datepicker__next-btn tiny-datepicker__next-year">&gt;&gt;</button>',
-      '<button class="tiny-datepicker__btn tiny-datepicker__next-btn tiny-datepicker__next-month">&gt;</button>',
+      '<button class="tiny-datepicker__btn tiny-datepicker__next-btn tiny-datepicker__next-year">' + nextYearArrow + '</button>',
+      '<button class="tiny-datepicker__btn tiny-datepicker__next-btn tiny-datepicker__next-month">' + nextMonthArrow + '</button>',
       '</div>',
       '<div class="tiny-datepicker__body">',
       '<table class="tiny-datepicker__table tiny-datepicker__date-table">',
@@ -295,7 +313,7 @@
       '<tbody></tbody>',
       '</table>',
       '</div>',
-      '<div class="tiny-datepicker__footer" style="display: ' + (this.settings.clearable ? 'block' : 'none') + '">',
+      '<div class="tiny-datepicker__footer" style="display: ' + (clearable ? 'block' : 'none') + '">',
       '<button class="tiny-datepicker__footer-btn tiny-datepicker__now-btn"><span>' + todayText + '</span></button>',
       '<button class="tiny-datepicker__footer-btn tiny-datepicker__clear-btn"><span>' + clearText + '</span></button>',
       '</div>'];
