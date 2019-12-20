@@ -916,12 +916,12 @@
 
   DatePicker.prototype.formatYear = function (year) {
     var yearTitle = this.getI18n().yearTitle;
-    return this.formatDate(new Date(year + '-1-2'), yearTitle);
+    return this.formatDate(new Date(year + '-01-01'), yearTitle);
   };
 
   DatePicker.prototype.formatMonth = function (year, month) {
     var monthTitle = this.getI18n().monthTitle;
-    return this.formatDate(new Date(year + '-' + month + '-2'), monthTitle);
+    return this.formatDate(new Date(year + '-' + pad(month) + '-01'), monthTitle);
   };
 
   DatePicker.prototype.getWeekStart = function () {
