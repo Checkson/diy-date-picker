@@ -26,11 +26,11 @@ const uglifyJsTask = () => {
 
 // parse sass and minify css
 const parseSassAndMinifyCssTask = () => {
-  return src('src/scss/*.scss')
+  return src('src/themes/*.scss')
     .pipe(sass())
     .pipe(cleanCSS())
     .pipe(rename({ extname: '.min.css' }))
-    .pipe(dest('theme'))
+    .pipe(dest('themes'))
     .pipe(connect.reload())
     .pipe(notify({
       message: 'Parse scss and minify css task has finished!'
@@ -48,10 +48,10 @@ const startWebServerTask = (cb) => {
 
 // watch task
 const watchTask = (cb) => {
-  watch('src/scss/*.scss', parseSassAndMinifyCssTask);
+  watch('src/**/*.scss', parseSassAndMinifyCssTask);
   watch(['src/*.js', 'src/**/*.js'], uglifyJsTask);
   livereload.listen();
-  watch(['dist/**', 'theme/**']).on('change', livereload.changed);
+  watch(['dist/**', 'themes/**']).on('change', livereload.changed);
   startWebServerTask(cb);
   cb();
 };
