@@ -100,7 +100,8 @@
     showWeekDays: true,
     templates: null,
     weekStart: 0,
-    zIndex: 2019
+    zIndex: 2019,
+    disabledDate: null,
   };
 
   var VALID_FORMAT = /dd?|DD?|mm?|MM?|yy(?:yy)?/g;
@@ -543,8 +544,15 @@
       className = 'next-month';
     }
 
+    // settings check
+    var settings = this.settings;
+    var daysOfWeekDisabled = settings.daysOfWeekDisabled || [];
+    var disabledDate = settings.disabledDate;
+
     // check if day of week disabled
-    if (this.settings.daysOfWeekDisabled.indexOf(data.day) > -1) {
+    if (daysOfWeekDisabled.indexOf(data.day) > -1) {
+      className += ' disabled';
+    } else if (disabledDate && (typeof disabledDate === 'function') && disabledDate(new Date(data.year + '-' + pad(data.month) + '-' + pad(data.date) + ' 00:00:00'))) {
       className += ' disabled';
     }
 
@@ -852,6 +860,14 @@
 
   DatePicker.prototype.setTodayValue = function () {
     var now = new Date();
+
+    // check today if disabled
+    var settings = this.settings;
+    
+    if (settings.disabledDate && typeof settings.disabledDate === 'function' && settings.disabledDate(new Date(now.setHours(0, 0, 0, 0)))) {
+      return;
+    }
+
     var year = now.getFullYear();
     var month = now.getMonth() + 1;
     var date = now.getDate();
