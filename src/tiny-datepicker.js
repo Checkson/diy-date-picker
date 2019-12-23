@@ -91,6 +91,10 @@
     return document.body[_type];
   }
 
+  function getDOMTagName ($dom) {
+    return $dom.tagName.toLowerCase();
+  }
+
   // ---------------- constants  ----------------
   var DEFAULTS = {
     clearable: false,
@@ -107,8 +111,9 @@
   var VALID_FORMAT = /dd?|DD?|mm?|MM?|yy(?:yy)?/g;
 
   // ---------------- datepicker  ----------------
-  function DatePicker ($input, options) {
-    this.$input = $input;
+  function DatePicker ($el, options) {
+    this.$el = $el;
+    this.$input = getDOMTagName($el) === 'input' ? $el : $el.querySelector('input');
     this.options = options || {};
     this.$datePicker = null;
     this.value = null;
@@ -400,7 +405,7 @@
   };
 
   DatePicker.prototype.adjustPosition = function () {
-    var inputRect = this.$input.getBoundingClientRect();
+    var inputRect = this.$el.getBoundingClientRect();
     var datepickerRect = this.$datePicker.getBoundingClientRect();
 
     var inputTop = inputRect.top;
@@ -914,6 +919,7 @@
     if (!date) {
       return date;
     }
+
     // if is timestamp format
     if (formatStr === 'timestamp') {
       return date.getTime();
@@ -982,7 +988,7 @@
   DatePicker.prototype.isValidClick = function ($target) {
     var $node = $target;
     while ($node) {
-      if ($node === this.$datePicker || $node === this.$input) {
+      if ($node === this.$datePicker || $node === this.$el) {
         return false;
       }
       $node = $node.parentNode;
