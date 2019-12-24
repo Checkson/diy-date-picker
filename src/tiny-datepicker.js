@@ -95,6 +95,19 @@
     return $dom.tagName.toLowerCase();
   }
 
+  function isDate (date) {
+    if (date === null || date === 'undefined') return false;
+    if (isNaN(new Date(date).getTime())) return false;
+    if (Array.isArray(date)) return false; // deal with `new Date([ new Date() ]) -> new Date()`
+    return true;
+  }
+
+  function isEqualDate (date1, date2) {
+    var dateValue1 = new Date(new Date(date1).setHours(0, 0, 0, 0)).getTime();
+    var dateValue2 = new Date(new Date(date2).setHours(0, 0, 0, 0)).getTime();
+    return dateValue1 === dateValue2;
+  }
+
   // ---------------- constants  ----------------
   var DEFAULTS = {
     clearable: false,
@@ -137,7 +150,7 @@
     // bind event for input
     this.$input.addEventListener('focus', this.onShow.bind(this));
     this.$input.addEventListener('click', this.onShow.bind(this));
-    this.$input.addEventListener('keydown', this.handleKeyDown.bind(this));
+    this.$input.addEventListener('keydown', this.onKeyDown.bind(this));
     // bind event for hide datepicker
     document.addEventListener('click', this.onHide.bind(this));
   };
@@ -182,12 +195,8 @@
       var defaultValue = this.settings.defaultValue;
       var resDate = null;
 
-      if (defaultValue instanceof Date) { // instance of Date
-        resDate = defaultValue;
-      } else if (typeof defaultValue === 'number') { // timestamp
-        resDate = new Date(defaultValue);
-      } else if (typeof defaultValue === 'string') { // format strings
-        resDate = this.parseDate(defaultValue);
+      if (isDate(defaultValue)) { // valid date format: timestamp、instance of Date、strings etc.
+        resDate = new Date(defaultValue); ;
       } else { // no default value
         resDate = new Date();
       }
@@ -379,8 +388,9 @@
 
   DatePicker.prototype.onHide = function (event) {
     var $target = event.target;
-    if (this.state.isVisible && this.isValidClick($target)) {
+    if (this.state.isVisible && this.isInvalidClick($target)) {
       this.hide();
+      this.blur();
     }
   };
 
@@ -398,13 +408,31 @@
     }
   };
 
-  DatePicker.prototype.handleKeyDown = function (event) {
+  DatePicker.prototype.blur = function () {
+    var inputValue = this.$input.value;
+    var value = this.value;
+
+    if (value && isDate(value)) { // value is not null
+      if (inputValue && isDate(inputValue)) { // value and inputValue is not null
+        !isEqualDate(value, inputValue) && this.setValue(inputValue);
+      } else { // value is not null, inputValue is null
+        this.setValue(value);
+      }
+    } else if (inputValue && isDate(inputValue)) { // value is null, inputValue not null
+      this.setValue(inputValue);
+    } else { // value and inputValue is null
+      this.setValue(null);
+    }
+  };
+
+  DatePicker.prototype.onKeyDown = function (event) {
     var keyCode = event.keyCode;
     var self = this;
 
     // ESC
     if (keyCode === 27) {
       self.hide();
+      self.blur();
     }
 
     // Tab
@@ -412,6 +440,7 @@
       setTimeout(function () {
         if (this.$input !== document.activeElement) {
           self.hide();
+          self.blur();
         }
       }, 0);
     }
@@ -718,11 +747,10 @@
 
     var data = this.state.dateData[index];
 
-    var newDate = data.date;
-    var newMonth = data.month;
-    var newYear = data.year;
+    var newDate = new Date(data.year, data.month - 1, data.date);
 
-    this.setValue(newYear, newMonth, newDate);
+    this.setValue(newDate);
+    this.hide();
   };
 
   DatePicker.prototype.onChooseMonth = function (index) {
@@ -888,36 +916,28 @@
       return;
     }
 
-    var year = now.getFullYear();
-    var month = now.getMonth() + 1;
-    var date = now.getDate();
-
-    this.setValue(year, month, date);
-  };
-
-  DatePicker.prototype.clearValue = function () {
-    this.setValue(null, null, null);
-  };
-
-  DatePicker.prototype.setValue = function (year, month, date) {
-    this.state.year = year;
-    this.state.month = month;
-    this.state.date = date;
-
-    var _date = null;
-
-    if (year && month && date) {
-      _date = new Date(year, month - 1, date);
-    }
-
-    this.value = _date;
-    this.$input.value = this.formatDate(_date, this.getFinalValue('format'));
-
+    this.setValue(now);
     this.hide();
   };
 
-  DatePicker.prototype.parseDate = function (value) {
-    return new Date();
+  DatePicker.prototype.clearValue = function () {
+    this.setValue(null);
+    this.hide();
+  };
+
+  DatePicker.prototype.setValue = function (newDate) {
+    var _date = null;
+
+    if (isDate(newDate)) {
+      _date = new Date(newDate);
+    }
+
+    this.state.year = _date && _date.getFullYear();
+    this.state.month = _date && (_date.getMonth() + 1);
+    this.state.date = _date && _date.getDate();
+
+    this.value = _date;
+    this.$input.value = this.formatDate(_date, this.getFinalValue('format'));
   };
 
   DatePicker.prototype.parseFormat = function (formatStr) {
@@ -1004,7 +1024,7 @@
     return this.$datePicker.querySelector(selector);
   };
 
-  DatePicker.prototype.isValidClick = function ($target) {
+  DatePicker.prototype.isInvalidClick = function ($target) {
     var $node = $target;
     while ($node) {
       if ($node === this.$datePicker || $node === this.$el) {
