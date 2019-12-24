@@ -99,13 +99,14 @@
   var DEFAULTS = {
     clearable: false,
     daysOfWeekDisabled: [],
+    disabledDate: null,
+    defaultValue: null,
     format: 'yyyy-mm-dd',
     lang: 'zh-CN',
     showWeekDays: true,
     templates: null,
     weekStart: 0,
-    zIndex: 2019,
-    disabledDate: null,
+    zIndex: 2019
   };
 
   var VALID_FORMAT = /dd?|DD?|mm?|MM?|yy(?:yy)?/g;
@@ -178,9 +179,21 @@
     var thisMonth = this.state.month;
 
     if (!thisYear || !thisMonth) {
-      var now = new Date();
-      thisYear = now.getFullYear();
-      thisMonth = now.getMonth() + 1;
+      var defaultValue = this.settings.defaultValue;
+      var resDate = null;
+
+      if (defaultValue instanceof Date) { // instance of Date
+        resDate = defaultValue;
+      } else if (typeof defaultValue === 'number') { // timestamp
+        resDate = new Date(defaultValue);
+      } else if (typeof defaultValue === 'string') { // format strings
+        resDate = this.parseDate(defaultValue);
+      } else { // no default value
+        resDate = new Date();
+      }
+
+      thisYear = resDate.getFullYear();
+      thisMonth = resDate.getMonth() + 1;
     }
 
     var firstDateOfThisMonth = getFirstDateOfMonth(thisYear, thisMonth);
@@ -500,7 +513,7 @@
         $view.push('<tr>');
       }
 
-      $view.push('<td class="' + className + '"><span>' + data.date + '</span></td>');
+      $view.push('<td class="' + className + '"><span>' + data.date + ',' + data.day + '</span></td>');
 
       if (i % countOfRow === countOfRow - 1) {
         $view.push('</tr>');
@@ -518,7 +531,7 @@
       var data = dateData[i];
       var $td = $tdArr[i];
       $td.className = this.getDateTdClass(data);
-      $td.innerHTML = '<span>' + data.date + '</span>';
+      $td.innerHTML = '<span>' + data.date + ',' + data.day + '</span>';
     }
 
     this.changeDateTableHeaderView();
@@ -868,7 +881,7 @@
 
     // check today if disabled
     var settings = this.settings;
-    
+
     if (settings.disabledDate && typeof settings.disabledDate === 'function' && settings.disabledDate(new Date(now.setHours(0, 0, 0, 0)))) {
       return;
     }
@@ -899,6 +912,10 @@
     this.$input.value = this.formatDate(_date, this.getFinalValue('format'));
 
     this.hide();
+  };
+
+  DatePicker.prototype.parseDate = function (value) {
+    return new Date();
   };
 
   DatePicker.prototype.parseFormat = function (formatStr) {
