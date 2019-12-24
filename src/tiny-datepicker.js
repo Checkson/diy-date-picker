@@ -204,7 +204,7 @@
     var lastDateOfLastMonth = getLastDateOfLastMonth(thisYear, thisMonth);
     var dayCountOfLastMonth = getDayCountOfLastMonth(thisYear, thisMonth);
     var lastMonth = lastDateOfLastMonth.getMonth() + 1;
-    var lastMonthOfYear = lastDateOfLastMonth.getFullYear();
+    var yearOfLastMonth = lastDateOfLastMonth.getFullYear();
 
     var dayCountOfThisMonth = getDayCountOfMonth(thisYear, thisMonth);
 
@@ -222,18 +222,18 @@
     this.state.dateData = [];
 
     if (firstDayOfThisMonth === weekStart) {
-      for (var i = dayCountOfWeek - 1; i >= 0; i--) {
-        this.state.dateData.unshift({
+      for (var i = 0; i < dayCountOfWeek; i++) {
+        this.state.dateData.push({
           day: (i + weekStart) % dayCountOfWeek,
-          date: dayCountOfLastMonth + i - dayCountOfWeek + 1,
+          date: dayCountOfLastMonth - dayCountOfWeek + i + 1,
           month: lastMonth,
-          year: lastMonthOfYear
+          year: yearOfLastMonth
         });
       }
       rowCountOfDisplay--;
     }
 
-    var showDayCountOfLastMonth = (dayCountOfWeek - Math.abs(weekStart - firstDayOfThisMonth)) % dayCountOfWeek;
+    var showDayCountOfLastMonth = Math.abs(firstDayOfThisMonth - weekStart + dayCountOfWeek) % dayCountOfWeek;
 
     for (var j = 0; j < dayCountOfWeek * rowCountOfDisplay; j++) {
       var date, month, year;
@@ -241,7 +241,7 @@
       if (j < showDayCountOfLastMonth) { // last month
         date = dayCountOfLastMonth - showDayCountOfLastMonth + j + 1;
         month = lastMonth;
-        year = lastMonthOfYear;
+        year = yearOfLastMonth;
       } else if (j > dayCountOfThisMonth + showDayCountOfLastMonth - 1) { // next month
         date = j - dayCountOfThisMonth - showDayCountOfLastMonth + 1;
         month = nextMonth;
@@ -513,7 +513,7 @@
         $view.push('<tr>');
       }
 
-      $view.push('<td class="' + className + '"><span>' + data.date + ',' + data.day + '</span></td>');
+      $view.push('<td class="' + className + '"><span>' + data.date + '</span></td>');
 
       if (i % countOfRow === countOfRow - 1) {
         $view.push('</tr>');
@@ -531,7 +531,7 @@
       var data = dateData[i];
       var $td = $tdArr[i];
       $td.className = this.getDateTdClass(data);
-      $td.innerHTML = '<span>' + data.date + ',' + data.day + '</span>';
+      $td.innerHTML = '<span>' + data.date + '</span>';
     }
 
     this.changeDateTableHeaderView();
@@ -570,7 +570,7 @@
     // check if day of week disabled
     if (daysOfWeekDisabled.indexOf(data.day) > -1) {
       className += ' disabled';
-    } else if (disabledDate && (typeof disabledDate === 'function') && disabledDate(new Date(data.year + '-' + pad(data.month) + '-' + pad(data.date) + ' 00:00:00'))) {
+    } else if (disabledDate && (typeof disabledDate === 'function') && disabledDate(new Date(data.year, data.month, data.date, 0, 0, 0, 0))) {
       className += ' disabled';
     }
 
@@ -859,6 +859,7 @@
 
   DatePicker.prototype.renderForShowStatus = function () {
     var showStatus = this.state.showStatus;
+
     switch (showStatus) {
     case 0:
       this.initDateData();
@@ -873,6 +874,7 @@
       this.reRenderYearData();
       break;
     }
+
     this.toggleMonthBtnView(showStatus === 0);
   };
 
@@ -880,9 +882,9 @@
     var now = new Date();
 
     // check today if disabled
-    var settings = this.settings;
+    var disabledDate = this.settings.disabledDate;
 
-    if (settings.disabledDate && typeof settings.disabledDate === 'function' && settings.disabledDate(new Date(now.setHours(0, 0, 0, 0)))) {
+    if (disabledDate && typeof disabledDate === 'function' && disabledDate(new Date(now.setHours(0, 0, 0, 0)))) {
       return;
     }
 
@@ -905,7 +907,7 @@
     var _date = null;
 
     if (year && month && date) {
-      _date = new Date(year + '-' + pad(month) + '-' + pad(date));
+      _date = new Date(year, month - 1, date);
     }
 
     this.value = _date;
@@ -973,12 +975,12 @@
 
   DatePicker.prototype.formatYear = function (year) {
     var yearTitle = this.getI18n().yearTitle;
-    return this.formatDate(new Date(year + '-01-01'), yearTitle);
+    return this.formatDate(new Date(year, 0, 1), yearTitle);
   };
 
   DatePicker.prototype.formatMonth = function (year, month) {
     var monthTitle = this.getI18n().monthTitle;
-    return this.formatDate(new Date(year + '-' + pad(month) + '-01'), monthTitle);
+    return this.formatDate(new Date(year, month - 1, 1), monthTitle);
   };
 
   DatePicker.prototype.getWeekStart = function () {
