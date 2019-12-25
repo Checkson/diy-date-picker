@@ -1116,8 +1116,10 @@
   };
 
   DatePicker.prototype.remove = function () {
-    var parentElement = this.$datePicker.parentElement;
-    parentElement.removeChild(this.$datePicker);
+    if (this.$datePicker) {
+      var parentElement = this.$datePicker.parentElement;
+      parentElement.removeChild(this.$datePicker);
+    }
   };
 
   DatePicker.prototype.destroy = function () {
@@ -1175,7 +1177,7 @@
     }
 
     return res;
-  }
+  };
 
   // destroy
   tinyDatePicker.destroy = function (selectors) {
