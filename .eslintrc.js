@@ -5,6 +5,7 @@ module.exports = {
 		sourceType: 'module'
 	},
 	env: {
+		browser: true,
 		node: true,
 		jest: true,
 		worker: true,
