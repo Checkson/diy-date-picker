@@ -139,7 +139,17 @@
     }
 
     return els;
-  };
+  }
+
+  function trigger ($el, event) {
+    if ('createEvent' in document) {
+      var evt = document.createEvent('HTMLEvents');
+      evt.initEvent(event, false, true);
+      $el.dispatchEvent(evt);
+    } else {
+      $el.fireEvent('on' + event);
+    }
+  }
 
   // ---------------- constants  ----------------
   var DEFAULTS = {
@@ -996,6 +1006,8 @@
 
     this.value = _date;
     this.$input.value = this.formatDate(_date, this.getFinalValue('format'));
+
+    trigger(this.$input, 'change');
 
     this.changeView(0);
     this.renderForShowStatus();

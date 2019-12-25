@@ -16,9 +16,9 @@
     tinyDatePicker.init('#input', {
       clearable: true
     });
-    document.getElementById('input').addEventListener('change', function () {
+    document.getElementById('input').onchange = function () {
       console.log('改变了');
-    });
+    }
   </script>
 </body>
 </html>
