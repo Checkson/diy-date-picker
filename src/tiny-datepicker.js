@@ -108,6 +108,39 @@
     return dateValue1 === dateValue2;
   }
 
+  function setData ($el, key, value) {
+    $el[key + SEED] = value;
+  }
+
+  function getData ($el, key) {
+    return $el[key + SEED];
+  }
+
+  function removeData ($el, key) {
+    delete $el[key + SEED];
+  }
+
+  function getElements (selectors) {
+    var els = [];
+
+    if (typeof selectors === 'string') { // strings selector
+      var elements = document.querySelectorAll(selectors);
+      for (var i = 0, len = elements.length; i < len; i++) {
+        els.push(elements[i]);
+      }
+    } else if (selectors instanceof NodeList || selectors instanceof HTMLCollection) { // a series of node
+      for (var j = 0, len2 = selectors.length; j < len2; j++) {
+        els.push(selectors[i]);
+      }
+    } else if (selectors && typeof selectors === 'object' && selectors instanceof HTMLElement) { // a single node
+      els.push(selectors);
+    } else {
+      throw new Error('Invalid selector for tiny date picker!');
+    }
+
+    return els;
+  };
+
   // ---------------- constants  ----------------
   var DEFAULTS = {
     clearable: false,
@@ -123,6 +156,8 @@
   };
 
   var VALID_FORMAT = /dd?|DD?|mm?|MM?|yy(?:yy)?/g;
+
+  var SEED = Math.random().toString(36).substr(2);
 
   // ---------------- datepicker  ----------------
   function DatePicker ($el, options) {
@@ -143,16 +178,17 @@
       month: null,
       year: null
     };
+    this.handleShow = this.onShow.bind(this);
+    this.handleKeyDown = this.onKeyDown.bind(this);
+    this.handleHide = this.onHide.bind(this);
     this.register();
   }
 
   DatePicker.prototype.register = function () {
-    // bind event for input
-    this.$input.addEventListener('focus', this.onShow.bind(this));
-    this.$input.addEventListener('click', this.onShow.bind(this));
-    this.$input.addEventListener('keydown', this.onKeyDown.bind(this));
-    // bind event for hide datepicker
-    document.addEventListener('click', this.onHide.bind(this));
+    // setData
+    setData(this.$el, 'datepicker', this);
+    // add event listener
+    this.addEventListener();
   };
 
   DatePicker.prototype.init = function () {
@@ -372,6 +408,24 @@
     this.$clearBtn = this.getDom('.tiny-datepicker__clear-btn');
   };
 
+  DatePicker.prototype.addEventListener = function () {
+    // bind event for input
+    this.$input.addEventListener('focus', this.handleShow);
+    this.$input.addEventListener('click', this.handleShow);
+    this.$input.addEventListener('keydown', this.handleKeyDown);
+    // bind event for hide datepicker
+    document.addEventListener('click', this.handleHide);
+  };
+
+  DatePicker.prototype.removeEventListener = function () {
+    // bind event for input
+    this.$input.removeEventListener('focus', this.handleShow);
+    this.$input.removeEventListener('click', this.handleShow);
+    this.$input.removeEventListener('keydown', this.handleKeyDown);
+    // bind event for hide datepicker
+    document.removeEventListener('click', this.handleHide);
+  };
+
   DatePicker.prototype.onShow = function () {
     if (this.state.isVisible) {
       return;
@@ -414,14 +468,14 @@
 
     if (value && isDate(value)) { // value is not null
       if (inputValue && isDate(inputValue)) { // value and inputValue is not null
-        !isEqualDate(value, inputValue) && this.setValue(inputValue);
+        !isEqualDate(value, inputValue) && this.setDate(inputValue);
       } else { // value is not null, inputValue is null
-        this.setValue(value);
+        this.setDate(value);
       }
     } else if (inputValue && isDate(inputValue)) { // value is null, inputValue not null
-      this.setValue(inputValue);
+      this.setDate(inputValue);
     } else { // value and inputValue is null
-      this.setValue(null);
+      this.setDate(null);
     }
   };
 
@@ -724,7 +778,7 @@
     this.$nextMonth.addEventListener('click', this.doNextMonth.bind(this));
     this.$nextYear.addEventListener('click', this.doNextYear.bind(this));
     this.$nowBtn.addEventListener('click', this.setTodayValue.bind(this));
-    this.$clearBtn.addEventListener('click', this.clearValue.bind(this));
+    this.$clearBtn.addEventListener('click', this.doClearDate.bind(this));
     this.initChooseEvent();
   };
 
@@ -749,7 +803,7 @@
 
     var newDate = new Date(data.year, data.month - 1, data.date);
 
-    this.setValue(newDate);
+    this.setDate(newDate);
     this.hide();
   };
 
@@ -916,16 +970,20 @@
       return;
     }
 
-    this.setValue(now);
+    this.setDate(now);
     this.hide();
   };
 
-  DatePicker.prototype.clearValue = function () {
-    this.setValue(null);
+  DatePicker.prototype.doClearDate = function () {
+    this.clearDate();
     this.hide();
   };
 
-  DatePicker.prototype.setValue = function (newDate) {
+  DatePicker.prototype.clearDate = function () {
+    this.setDate(null);
+  };
+
+  DatePicker.prototype.setDate = function (newDate) {
     var _date = null;
 
     if (isDate(newDate)) {
@@ -938,6 +996,9 @@
 
     this.value = _date;
     this.$input.value = this.formatDate(_date, this.getFinalValue('format'));
+
+    this.changeView(0);
+    this.renderForShowStatus();
   };
 
   DatePicker.prototype.parseFormat = function (formatStr) {
@@ -952,6 +1013,10 @@
       separators: separators,
       parts: parts
     };
+  };
+
+  DatePicker.prototype.getDate = function () {
+    return this.value;
   };
 
   DatePicker.prototype.formatDate = function (date, formatStr) {
@@ -1050,6 +1115,21 @@
     return this.settings[key];
   };
 
+  DatePicker.prototype.remove = function () {
+    var parentElement = this.$datePicker.parentElement;
+    parentElement.removeChild(this.$datePicker);
+  };
+
+  DatePicker.prototype.destroy = function () {
+    this.hide();
+    // remove event listener
+    this.removeEventListener();
+    // remove dom
+    this.remove();
+    // remove data
+    removeData(this, 'datepicker');
+  };
+
   // ---------------- tiny datepicker  ----------------
   var tinyDatePicker = {};
 
@@ -1073,10 +1153,58 @@
 
   // init
   tinyDatePicker.init = function (selectors, options) {
-    var elements = document.querySelectorAll(selectors);
+    var elements = getElements(selectors);
+
     for (var i = 0, len = elements.length; i < len; i++) {
       new DatePicker(elements[i], options);
     }
+  };
+
+  // proxy
+  tinyDatePicker.proxy = function (selectors, methods) {
+    var elements = getElements(selectors);
+    var args = Array.prototype.slice.call(arguments, 2);
+    var res = [];
+
+    for (var i = 0, len = elements.length; i < len; i++) {
+      var datepicker = getData(elements[i], 'datepicker');
+
+      if (datepicker) {
+        res.push(datepicker[methods].apply(datepicker, args));
+      }
+    }
+
+    return res;
+  }
+
+  // destroy
+  tinyDatePicker.destroy = function (selectors) {
+    this.proxy(selectors, 'destroy');
+  };
+
+  // show
+  tinyDatePicker.show = function (selectors) {
+    this.proxy(selectors, 'onShow');
+  };
+
+  // hide
+  tinyDatePicker.hide = function (selectors) {
+    this.proxy(selectors, 'hide');
+  };
+
+  // setDate
+  tinyDatePicker.setDate = function (selectors, newDate) {
+    this.proxy(selectors, 'setDate', newDate);
+  };
+
+  // getDate
+  tinyDatePicker.getDate = function (selectors) {
+    return this.proxy(selectors, 'getDate');
+  };
+
+  // clearDate
+  tinyDatePicker.clearDate = function (selectors) {
+    this.proxy(selectors, 'clearDate');
   };
 
   return tinyDatePicker;
