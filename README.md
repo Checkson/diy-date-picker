@@ -16,7 +16,7 @@ IE10及以上。IE9 因为 table 标签中的 innerHTML 属性是只读的，但
 $ npm install tiny-datepicker --save
 ```
 
-Or
+或者
 
 ```shell
 $ yarn add tiny-datepicker
