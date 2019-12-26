@@ -4,7 +4,7 @@
 
 ## 兼容性
 
-IE10及以上。IE9 因为 table 标签中的 innerHTML 属性是只读的，但是 tiny-datepicker 中大量用到 innerHTML 属性操作，毕竟 IE9 迟早都会被淘汰，所以插件并没有打算兼容 IE9。
+IE10及以上。IE9 因为 table 标签中的 innerHTML 属性是只读的，但是 tiny-datepicker 中大量用到 innerHTML 属性操作，毕竟 IE9 迟早都会被淘汰，所以该插件并没有打算兼容 IE9。
 
 ## 演示
 
@@ -19,7 +19,7 @@ $ npm install tiny-datepicker --save
 Or
 
 ```shell
-$ yarn add ptiny-datepicker
+$ yarn add tiny-datepicker
 ```
 
 ## 快速开始
