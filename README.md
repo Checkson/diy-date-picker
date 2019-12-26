@@ -39,11 +39,9 @@
 </script>
 ```
 
-**注意：** input组件中必须包含input标签，因为它是日期选择器必须关联的标签。
+> **注意：** input组件中必须包含input标签，因为它是日期选择器必须关联的标签。
 
 ## 选项
-
-tiny-datepicker 配套了一些可选选项以供开发者按照自身需求进行个性化。
 
 名称 | 类型 | 默认值 | 描述 
 :--- |:--- |:--- |:--- 
@@ -62,7 +60,7 @@ zIndex | number | 2019 | 日期选择器显示时其css中z-index属性的值。
 
 ### init
 
-这是 tiny-datepicker 的初始化方法，它接受两个参数：`selectors` 和 `options`。
+这是 `tiny-datepicker` 的初始化方法，它接受两个参数：`selectors` 和 `options`。
 
 ```javascript
 tinyDatePicker.init('#datepicker', {
@@ -72,11 +70,11 @@ tinyDatePicker.init('#datepicker', {
 
 其中，`selectors` 参数可以是有效的 `css` 选择器字符串，也可以是 `NodeList` 的实例，也可以是 `HTMLCollection` 的实例，也可以是 `HTMLElement` 的实例。`options` 就是上述提到的 options 配置。
 
-**注意：** 以下所有方法中的参数 `selectors` 定义和 `init` 方法中定义的一致。
+> **注意：** 以下所有方法中的参数 `selectors` 定义和 `init` 方法中定义的一致。
 
 ### destroy
 
-这是 tiny-datepicker 的销毁方法，它接受一个参数：`selectors`。
+这是 `tiny-datepicker` 的销毁方法，它接受一个参数：`selectors`。
 
 ```javascript
 tinyDatePicker.destroy('#datepicker');
@@ -84,7 +82,7 @@ tinyDatePicker.destroy('#datepicker');
 
 ### show
 
-这是 tiny-datepicker 的显示方法，它接受一个参数：`selectors`。
+这是 `tiny-datepicker` 的显示方法，它接受一个参数：`selectors`。
 
 ```javascript
 tinyDatePicker.show('#datepicker');
@@ -92,7 +90,7 @@ tinyDatePicker.show('#datepicker');
 
 ### hide
 
-这是 tiny-datepicker 的隐藏方法，它接受一个参数：`selectors`。
+这是 `tiny-datepicker` 的隐藏方法，它接受一个参数：`selectors`。
 
 ```javascript
 tinyDatePicker.hide('#datepicker');
@@ -100,7 +98,7 @@ tinyDatePicker.hide('#datepicker');
 
 ### setDate
 
-这是 tiny-datepicker 的设置日期方法，它接受两个参数：`selectors` 和 `newDate`。`newDate` 可以是合法的 `Date` 的实例，也可以是数字类型的时间戳（`timestamp`） ，也可以能被 `new Date` 正确解析的日期字符串。
+这是 `tiny-datepicker` 的设置日期方法，它接受两个参数：`selectors` 和 `newDate`。`newDate` 可以是合法的 `Date` 的实例，也可以是数字类型的时间戳（`timestamp`） ，也可以能被 `new Date` 正确解析的日期字符串。
 
 ```javascript
 tinyDatePicker.setDate('#datepicker', '2019-08-15');
@@ -108,15 +106,15 @@ tinyDatePicker.setDate('#datepicker', '2019-08-15');
 
 ### getDate
 
-这是 tiny-datepicker 的获取日期方法，它接受一个参数：`selectors` 。这里需要强调的是，该函数返回的是一个日期数组，里面包含的是可能是多个 `selectors` 返回的日期；如果 `selectors` 实例只有一个，那么返回的日期数组长度为1.
+这是 `tiny-datepicker` 的获取日期方法，它接受一个参数：`selectors` 。这里需要强调的是，该函数返回的是一个日期数组，里面包含的是可能是多个 `selectors` 返回的日期；如果 `selectors` 实例只有一个，那么返回的日期数组长度为1.
 
 ```javascript
-tinyDatePicker.setDate('#datepicker', '2019-08-15');
+tinyDatePicker.setDate('#datepicker');
 ```
 
 ### clearDate
 
-这是 tiny-datepicker 的清除日期方法，它接受一个参数：`selectors` 。
+这是 `tiny-datepicker` 的清除日期方法，它接受一个参数：`selectors` 。
 
 ```javascript
 tinyDatePicker.clearDate('#datepicker');
