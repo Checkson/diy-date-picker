@@ -60,7 +60,7 @@ zIndex | number | 2019 | 日期选择器显示时其css中z-index属性的值。
 
 ### init
 
-这是 `tiny-datepicker` 的初始化方法，它接受两个参数：`selectors` 和 `options`。
+初始化日期选择器的方法，它接受两个参数：`selectors` 和 `options`。
 
 ```javascript
 tinyDatePicker.init('#datepicker', {
@@ -74,7 +74,7 @@ tinyDatePicker.init('#datepicker', {
 
 ### destroy
 
-这是 `tiny-datepicker` 的销毁方法，它接受一个参数：`selectors`。
+销毁日期选择器的方法，它接受一个参数：`selectors`。
 
 ```javascript
 tinyDatePicker.destroy('#datepicker');
@@ -82,7 +82,7 @@ tinyDatePicker.destroy('#datepicker');
 
 ### show
 
-这是 `tiny-datepicker` 的显示方法，它接受一个参数：`selectors`。
+显示日期选择器的方法，它接受一个参数：`selectors`。
 
 ```javascript
 tinyDatePicker.show('#datepicker');
@@ -90,7 +90,7 @@ tinyDatePicker.show('#datepicker');
 
 ### hide
 
-这是 `tiny-datepicker` 的隐藏方法，它接受一个参数：`selectors`。
+隐藏日期选择器的方法，它接受一个参数：`selectors`。
 
 ```javascript
 tinyDatePicker.hide('#datepicker');
@@ -98,7 +98,7 @@ tinyDatePicker.hide('#datepicker');
 
 ### setDate
 
-这是 `tiny-datepicker` 的设置日期方法，它接受两个参数：`selectors` 和 `newDate`。`newDate` 可以是合法的 `Date` 的实例，也可以是数字类型的时间戳（`timestamp`） ，也可以能被 `new Date` 正确解析的日期字符串。
+设置日期的方法，它接受两个参数：`selectors` 和 `newDate`。`newDate` 可以是合法的 `Date` 的实例，也可以是数字类型的时间戳（`timestamp`） ，也可以能被 `new Date` 正确解析的日期字符串。
 
 ```javascript
 tinyDatePicker.setDate('#datepicker', '2019-08-15');
@@ -106,7 +106,7 @@ tinyDatePicker.setDate('#datepicker', '2019-08-15');
 
 ### getDate
 
-这是 `tiny-datepicker` 的获取日期方法，它接受一个参数：`selectors` 。这里需要强调的是，该函数返回的是一个日期数组，里面包含的是可能是多个 `selectors` 返回的日期；如果 `selectors` 实例只有一个，那么返回的日期数组长度为1.
+获取日期的方法，它接受一个参数：`selectors` 。这里需要强调的是，该函数返回的是一个日期数组，里面包含的是可能是多个 `selectors` 返回的日期；如果 `selectors` 实例只有一个，那么返回的日期数组长度为1.
 
 ```javascript
 tinyDatePicker.setDate('#datepicker');
@@ -114,7 +114,7 @@ tinyDatePicker.setDate('#datepicker');
 
 ### clearDate
 
-这是 `tiny-datepicker` 的清除日期方法，它接受一个参数：`selectors` 。
+清除日期的方法，它接受一个参数：`selectors` 。
 
 ```javascript
 tinyDatePicker.clearDate('#datepicker');
