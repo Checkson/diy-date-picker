@@ -1,16 +1,30 @@
 # tiny-datepicker
 
-一个用原生的 JavaScript 实现的小巧日期选择器 tiny-datepicker。
+一个用原生的 JavaScript 实现的、轻量的日期选择器。
 
 ## 兼容性
 
+IE10及以上。IE9 因为 table 标签中的 innerHTML 属性是只读的，但是 tiny-datepicker 中大量用到 innerHTML 属性操作，毕竟 IE9 迟早都会被淘汰，所以插件并没有打算兼容 IE9。
+
 ## 演示
+
+略。
 
 ## 安装
 
+```shell
+$ npm install tiny-datepicker --save
+```
+
+Or
+
+```shell
+$ yarn add ptiny-datepicker
+```
+
 ## 快速开始
 
-以下是受支持的HTML标签的示例。它们本身不会提供日期选择器功能，您需要在该标签上实例化日期选择器。
+以下是受支持的HTML标签的示例。它们本身不会提供日期选择器功能，您需要利用该标签，初始化日期选择器。
 
 ### input
 
@@ -53,7 +67,7 @@ format | string | yyyy-mm-dd | input标签中的值显示格式。
 lang | string | zh-CN | 语言，默认是简体中文。
 showWeekDays | boolean | true | 是否把工作日的名称显示在视图中。
 templates | object | null | 年份和月份切换图标模版配置。
-weekStart | number | 0 | 配置一周的开始。0（星期天）到6（星期六）。
+weekStart | number | 0 | 配置一周的开始，0（星期天）到6（星期六）。
 zIndex | number | 2019 | 日期选择器显示时其css中z-index属性的值。
 
 ## 方法
@@ -122,9 +136,19 @@ tinyDatePicker.clearDate('#datepicker');
 
 ## 皮肤
 
+略。
+
 ## 国际化
 
+该插件支持国际化。默认是简体中文（zh-CN）。其他可以用的翻译可以在 dist/locales 目录中找到，只需在插件之后引入您想要的语言环境即可。
+
+若该目录没有您想要的语言，可以提交添加语言合并的分支，或者在 [issues](https://github.com/Checkson/tiny-datepicker/issues) 提出，作者会及时跟进。
+
 ## 参考
+
+- [DatePicker组件开发](https://www.imooc.com/learn/820)
+- [bootstrap-datepicker](https://github.com/uxsolutions/bootstrap-datepicker)
+- [element-UI/date-picker](https://element.eleme.io/#/zh-CN/component/date-picker)
 
 ## 许可证
 
