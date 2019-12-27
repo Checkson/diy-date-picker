@@ -4,7 +4,9 @@
 
 ## 兼容性
 
-IE10及以上。IE9 因为 table 标签中的 innerHTML 属性是只读的，但是 tiny-datepicker 中大量用到 innerHTML 属性操作，毕竟 IE9 迟早都会被淘汰，所以该插件并没有打算兼容 IE9。
+IE10及以上。
+
+> 因为 IE9 中的 table 标签中的 innerHTML 属性是只读的，但是 tiny-datepicker 中大量用到 innerHTML 属性作为写入的操作，考虑到 IE9 迟早都会被淘汰，所以该插件并没有打算兼容 IE9。
 
 ## 演示
 
@@ -140,7 +142,26 @@ tinyDatePicker.clearDate('#datepicker');
 
 ## 国际化
 
-该插件支持国际化。默认是简体中文（zh-CN）。其他可以用的翻译可以在 dist/locales 目录中找到，只需在插件之后引入您想要的语言环境即可。
+该插件支持国际化。默认是简体中文（zh-CN）。其他可以用的翻译可以在 dist/locales 目录中找到，只需在插件之后引入您想要的语言环境即可。想要添加新的语言，只需要在全局对象 tinyDatePicker.langs 中添加一个语言键值即可。例如：
+
+```javascript
+;(function (global) {
+  global.tinyDatePicker.langs['zh-CN'] = {
+    days: ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'],
+    daysShort: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
+    daysMin: ['日', '一', '二', '三', '四', '五', '六'],
+    months: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+    monthsShort: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+    today: '今天',
+    clear: '清除',
+    format: 'yyyy-mm-dd',
+    monthTitle: 'mm月',
+    yearTitle: 'yyyy年',
+    titleExchange: false,
+    weekStart: 1
+  };
+}(window || self));
+```
 
 若该目录没有您想要的语言，可以提交添加语言合并的分支，或者在 [issues](https://github.com/Checkson/tiny-datepicker/issues) 提出，作者会及时跟进。
 
