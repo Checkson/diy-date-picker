@@ -10,7 +10,7 @@ IE10及以上。
 
 ## 演示
 
-略。
+[在线演示](https://checkson.github.io/tiny-datepicker/demo/)
 
 ## 安装
 
