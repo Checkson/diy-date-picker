@@ -15,6 +15,7 @@
       <h3 class="navbar-brand">tiny-datepicker</h3>
       <ul class="nav navbar-nav">
         <li class="active"><a href="#">演示</a></li>
+        <li><a href="#" target="_blank">主题</a></li>
         <li><a href="#" target="_blank">文档</a></li>
         <li><a href="https://github.com/Checkson/tiny-datepicker" target="_blank">github</a></li>
       </ul>
@@ -23,7 +24,7 @@
   <main class="content container">
     <div class="row">
       <h2 class="h2">tiny-datepicker 演示</h2>
-      <p class="p">tiny-datepicker 是一个用原生的JavaScript实现的日期选择器的插件，无依赖，非常轻小。</p>
+      <p class="p">tiny-datepicker 是一个用原生的 JavaScript 实现的日期选择器的插件，无依赖，非常轻小。</p>
     </div>
     <div class="row" style="padding-top: 10px;">
       <p class="p">
@@ -120,6 +121,36 @@
         </div>
       </div>
     </div>
+    <div class="row demo4">
+      <h3 class="h3">禁用日期</h3>
+      <div class="demo-panel clearfix">
+        <div class="demo-view">
+          <div class="input-component">
+            <span class="demonstration">禁用今天以后的日期</span>
+            <input class="input-control" placeholder="选择日期" type="text" id="disableDateUsage"/>
+          </div>
+        </div>
+        <div class="demo-code">
+          <pre>
+            <code class="language-html">
+&lt;!-- HTML --&gt;
+&lt;template&gt;
+  &lt;input class="input-control" type="text" id="disableDateUsage"/&gt;
+&lt;/template&gt;
+
+&lt;!-- JavaScript --&gt;
+&lt;script&gt;
+  tinyDatePicker.init('#disableDateUsage', {
+    disabledDate: function (date) { // 参数 date 是日期选择器中的某一个日期
+      return date.getTime() > new Date().getTime();
+    }
+  });
+&lt;/script&gt;
+            </code>
+          </pre>
+        </div>
+      </div>
+    </div>
   </main>
   <footer class="footer container">
     <p class="copyright">Copyright ©2019-2020 Checkson</p>
@@ -138,6 +169,12 @@
     tinyDatePicker.init('#i18nUsage', {
       clearable: true, // show clear button
       lang: 'en' // select english for language
+    });
+    // 示例4
+    tinyDatePicker.init('#disableDateUsage', {
+      disabledDate: function (date) { // 参数 date 是日期选择器中的某一个日期
+        return date.getTime() > new Date().getTime();
+      }
     });
   </script>
 </body>

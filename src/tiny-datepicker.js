@@ -207,6 +207,7 @@
     this.initDom();
     this.render();
     this.initEvent();
+    this.blur();
   };
 
   DatePicker.prototype.initOptions = function () {
@@ -663,7 +664,7 @@
     // check if day of week disabled
     if (daysOfWeekDisabled.indexOf(data.day) > -1) {
       className += ' disabled';
-    } else if (disabledDate && (typeof disabledDate === 'function') && disabledDate(new Date(data.year, data.month, data.date, 0, 0, 0, 0))) {
+    } else if (disabledDate && (typeof disabledDate === 'function') && disabledDate(new Date(data.year, data.month - 1, data.date, 0, 0, 0, 0))) {
       className += ' disabled';
     }
 
