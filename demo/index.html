@@ -5,20 +5,140 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>tiny datepicker</title>
-  <link rel="stylesheet" href="../themes/tiny-datepicker.min.css"/>
+  <link rel="stylesheet" href="./css/demo.css"/>
+  <link rel="stylesheet" href="./lib/prism.min.css"/>
+  <link rel="stylesheet" href="../dist/themes/tiny-datepicker.min.css"/>
 </head>
 <body>
-  <input type="text" class="input"/>
-  <input type="text" class="input"/>
-  <input type="text" class="input" id="input"/>
+  <header class="header">
+    <div class="navbar-inner container">
+      <h3 class="navbar-brand">tiny-datepicker</h3>
+      <ul class="nav navbar-nav">
+        <li class="active"><a href="#">演示</a></li>
+        <li><a href="#" target="_blank">文档</a></li>
+        <li><a href="https://github.com/Checkson/tiny-datepicker" target="_blank">github</a></li>
+      </ul>
+    </div>
+  </header>
+  <main class="content container">
+    <div class="row">
+      <h2 class="h2">tiny-datepicker 演示</h2>
+      <p class="p">tiny-datepicker 是一个用原生的JavaScript实现的日期选择器的插件，无依赖，非常轻小。</p>
+    </div>
+    <div class="row" style="padding-top: 10px;">
+      <p class="p">
+        <a class="download" href="https://github.com/Checkson/tiny-datepicker/releases" download>下载 1.2.4</a>
+      </p>
+    </div>
+    <div class="row demo1">
+      <h3 class="h3">基本用法</h3>
+      <div class="demo-panel clearfix">
+        <div class="demo-view">
+          <div class="input-component">
+            <span class="demonstration">默认</span>
+            <input class="input-control" placeholder="选择日期" type="text" id="baseUsage"/>
+          </div>
+        </div>
+        <div class="demo-code">
+          <pre>
+            <code class="language-html">
+&lt;!-- HTML --&gt;
+&lt;template&gt;
+  &lt;input class="input-control" type="text" id="baseUsage"/&gt;
+&lt;/template&gt;
+
+&lt;!-- JavaScript --&gt;
+&lt;script&gt;
+  tinyDatePicker.init('#baseUsage');
+&lt;/script&gt;
+            </code>
+          </pre>
+        </div>
+      </div>
+    </div>
+    <div class="row demo2">
+      <h3 class="h3">组件用法</h3>
+      <div class="demo-panel clearfix">
+        <div class="demo-view">
+          <div class="input-component">
+            <span class="demonstration">input组件</span>
+            <div class="input-group">
+              <i class="icon icon-date"></i>
+              <input class="input-control" placeholder="选择日期" type="text" id="componentUsage"/>
+            </div>
+          </div>
+        </div>
+        <div class="demo-code">
+          <pre>
+            <code class="language-html">
+&lt;!-- HTML --&gt;
+&lt;template&gt;
+  &lt;div class="input-group"&gt;
+    &lt;i class="icon icon-date"&gt;
+    &lt;input class="input-control" type="text" id="componentUsage"/&gt;
+  &lt;/div&gt;
+&lt;/template&gt;
+
+&lt;!-- JavaScript --&gt;
+&lt;script&gt;
+  tinyDatePicker.init('.input-group', {
+    clearable: true // 显示清除按钮
+  });
+&lt;/script&gt;
+            </code>
+          </pre>
+        </div>
+      </div>
+    </div>
+    <div class="row demo3">
+      <h3 class="h3">国际化</h3>
+      <div class="demo-panel clearfix">
+        <div class="demo-view">
+          <div class="input-component">
+            <span class="demonstration">i18n</span>
+            <input class="input-control" placeholder="Select Date" type="text" id="i18nUsage"/>
+          </div>
+        </div>
+        <div class="demo-code">
+          <pre>
+            <code class="language-html">
+&lt;!-- HTML --&gt;
+&lt;template&gt;
+  &lt;input class="input-control" type="text" id="i18nUsage"/&gt;
+&lt;/template&gt;
+
+&lt;!-- JavaScript --&gt;
+&lt;script src="${yourPath}/dist/locales/tiny-datepicker.en.min.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+  tinyDatePicker.init('#i18nUsage', {
+    clearable: true, // show clear button
+    lang: 'en' // select english for language
+  });
+&lt;/script&gt;
+            </code>
+          </pre>
+        </div>
+      </div>
+    </div>
+  </main>
+  <footer class="footer container">
+    <p class="copyright">Copyright ©2019-2020 Checkson</p>
+  </footer>
+  <script src="./lib/prism.min.js"></script>
   <script src="../dist/tiny-datepicker.min.js"></script>
+  <script src="../dist/locales/tiny-datepicker.en.min.js"></script>
   <script>
-    tinyDatePicker.init('#input', {
-      clearable: true
+    // 示例1
+    tinyDatePicker.init('#baseUsage');
+    // 示例2
+    tinyDatePicker.init('.input-group', {
+      clearable: true // 显示清除按钮
     });
-    document.getElementById('input').onchange = function () {
-      console.log('改变了');
-    }
+    // 示例3
+    tinyDatePicker.init('#i18nUsage', {
+      clearable: true, // show clear button
+      lang: 'en' // select english for language
+    });
   </script>
 </body>
 </html>

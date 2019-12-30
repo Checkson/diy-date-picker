@@ -1113,7 +1113,11 @@
   };
 
   DatePicker.prototype.getI18n = function () {
-    return tinyDatePicker.langs[this.settings.lang || 'zh-CN'];
+    var i18n = tinyDatePicker.langs[this.settings.lang || 'zh-CN'];
+    if (!i18n) {
+      throw new Error('Please check if ' + this.settings.lang + ' internationalization file is loaded!');
+    }
+    return i18n;
   };
 
   DatePicker.prototype.getFinalValue = function (key) {
