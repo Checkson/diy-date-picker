@@ -26,11 +26,11 @@ const uglifyJsTask = () => {
 
 // parse sass and minify css
 const parseSassAndMinifyCssTask = () => {
-  return src('src/themes/*.scss')
+  return src('src/**/*.scss')
     .pipe(sass())
     .pipe(cleanCSS())
     .pipe(rename({ extname: '.min.css' }))
-    .pipe(dest('themes'))
+    .pipe(dest('dist'))
     .pipe(connect.reload())
     .pipe(notify({
       message: 'Parse scss and minify css task has finished!'
