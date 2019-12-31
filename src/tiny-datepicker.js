@@ -223,6 +223,8 @@
 
   DatePicker.prototype.initWeekData = function () {
     var weekData = this.getI18n().daysMin;
+    // clone
+    weekData = weekData.slice(0);
     // calc week start
     var weekStart = this.getWeekStart();
 
