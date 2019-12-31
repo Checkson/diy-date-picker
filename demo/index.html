@@ -4,7 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta name="keywords" content="date, time, datepicker, timepicker, tiny, 日期, 时间, 选择器, 日期选择器">
   <title>tiny datepicker</title>
+  <link rel="stylesheet" href="./css/base.css"/>
   <link rel="stylesheet" href="./css/demo.css"/>
   <link rel="stylesheet" href="./lib/prism.min.css"/>
   <link rel="stylesheet" href="../dist/themes/tiny-datepicker.min.css"/>
@@ -15,8 +17,7 @@
       <h3 class="navbar-brand">tiny-datepicker</h3>
       <ul class="nav navbar-nav">
         <li class="active"><a href="#">演示</a></li>
-        <li><a href="#" target="_blank">主题</a></li>
-        <li><a href="#" target="_blank">文档</a></li>
+        <li><a href="#">主题</a></li>
         <li><a href="https://github.com/Checkson/tiny-datepicker" target="_blank">github</a></li>
       </ul>
     </div>
@@ -151,9 +152,44 @@
         </div>
       </div>
     </div>
+    <div class="row demo5">
+      <h3 class="h3">定制箭头图标</h3>
+      <div class="demo-panel clearfix">
+        <div class="demo-view">
+          <div class="input-component">
+            <span class="demonstration">定制箭头图标</span>
+            <input class="input-control" placeholder="选择日期" type="text" id="templatesUsage"/>
+          </div>
+        </div>
+        <div class="demo-code">
+          <pre>
+            <code class="language-html">
+&lt;!-- HTML --&gt;
+&lt;template&gt;
+  &lt;input class="input-control" type="text" id="templatesUsage"/&gt;
+&lt;/template&gt;
+
+&lt;!-- JavaScript --&gt;
+&lt;script&gt;
+  tinyDatePicker.init('#templatesUsage', {
+    templates: {
+      prevYearArrow: '&lt;i class="icon icon-arrow-left-o"&gt;&lt;/i&gt;',
+      prevMonthArrow: '&lt;i class="icon icon-arrow-left"&gt;&lt;/i&gt;',
+      nextMonthArrow: '&lt;i class="icon icon-arrow-right"&gt;&lt;/i&gt;',
+      nextYearArrow: '&lt;i class="icon icon-arrow-right-o"&gt;&lt;/i&gt;',
+    }
+  });
+&lt;/script&gt;
+            </code>
+          </pre>
+        </div>
+      </div>
+    </div>
   </main>
-  <footer class="footer container">
-    <p class="copyright">Copyright ©2019-2020 Checkson</p>
+  <footer class="footer">
+    <div class="container">
+      <p class="copyright">Copyright ©2019-2020 Checkson</p>
+    </div>
   </footer>
   <script src="./lib/prism.min.js"></script>
   <script src="../dist/tiny-datepicker.min.js"></script>
@@ -174,6 +210,15 @@
     tinyDatePicker.init('#disableDateUsage', {
       disabledDate: function (date) { // 参数 date 是日期选择器中的某一个日期
         return date.getTime() > new Date().getTime();
+      }
+    });
+    // 示例5
+    tinyDatePicker.init('#templatesUsage', {
+      templates: {
+        prevYearArrow: '<i class="icon icon-arrow-left-o"></i>',
+        prevMonthArrow: '<i class="icon icon-arrow-left"></i>',
+        nextMonthArrow: '<i class="icon icon-arrow-right"></i>',
+        nextYearArrow: '<i class="icon icon-arrow-right-o"></i>'
       }
     });
   </script>
