@@ -740,7 +740,7 @@
         $view.push('<tr>');
       }
 
-      $view.push('<td><span class="' + className + '">' + (yearData[i] || '') + '</span></td>');
+      $view.push('<td class="' + className + '"><span>' + (yearData[i] || '') + '</span></td>');
 
       if (i % countOfRow === countOfRow - 1) {
         $view.push('</tr>');
@@ -768,6 +768,11 @@
   DatePicker.prototype.getYearTdClass = function (data) {
     var className = 'available';
     var today = new Date();
+
+    // if it is undefined cell
+    if (data === undefined) {
+      className = 'disabled';
+    }
 
     // check if today
     if (today.getFullYear() === data) {
@@ -820,13 +825,23 @@
     this.hide();
   };
 
-  DatePicker.prototype.onChooseMonth = function (index) {
+  DatePicker.prototype.onChooseMonth = function (index, $el) {
+    // if disabled
+    if ($el.className.search(/\bdisabled\b/) > -1) {
+      return;
+    }
+
     var newMonth = this.state.monthData[index].value;
     this.state.month = newMonth;
     this.changeDateView();
   };
 
-  DatePicker.prototype.onChooseYear = function (index) {
+  DatePicker.prototype.onChooseYear = function (index, $el) {
+    // if disabled
+    if ($el.className.search(/\bdisabled\b/) > -1) {
+      return;
+    }
+
     var newYear = this.state.yearData[index];
     this.state.year = newYear;
     this.changeMonthView();

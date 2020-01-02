@@ -23,6 +23,12 @@ $ npm install tiny-datepicker --save
 ```shell
 $ yarn add tiny-datepicker
 ```
+或者
+
+```html
+<!-- 页面常规引入 -->
+<script src="${yourPath}/tiny-datepicker/dist/tiny-datepicker.min.js"></script>
+```
 
 ## 快速开始
 
@@ -71,6 +77,14 @@ showWeekDays | boolean | true | 是否把工作日的名称显示在视图中。
 templates | object | null | 年份和月份切换图标模版配置。
 weekStart | number | 0 | 配置一周的开始，0（星期天）到6（星期六）。
 zIndex | number | 2019 | 日期选择器显示时其css中z-index属性的值。
+
+其中 `format` 日期格式支持的特殊字符含义分别是：
+
+- d，dd：数字日期，分别没有前导零和前导零。例如6、06。
+- D，DD：分别为缩写和完整的工作日名称。例如，周五，星期五。
+- m，mm：数字月份，分别没有前导零和前导零。例如8、08。
+- M，MM：分别是缩写名称和完整月份的名称。例如，1月，一月
+- yyyy：4位数字的年份。例如，2020年。
 
 ## 方法
 
@@ -136,9 +150,9 @@ tinyDatePicker.setDate('#datepicker');
 tinyDatePicker.clearDate('#datepicker');
 ```
 
-## 皮肤
+## 主题
 
-略。
+[在线演示](https://checkson.github.io/tiny-datepicker/demo/theme.html)，请按照自身需求引入不同的主题文件，主题文件在 `dist/themes` 目录下。
 
 ## 国际化
 

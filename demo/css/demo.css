@@ -1,9 +1,9 @@
 .demo-panel {
+  position: relative;
   border: 1px solid #ccc;
 }
 
 .demo-view {
-  position: relative;
   float: left;
 }
 
@@ -18,14 +18,11 @@
 }
 
 .input-component {
-  position: relative;
-  margin: 0 auto;
-  margin-top: 80px;
+  position: absolute;
   width: 200px;
-}
-
-.demo2 .input-component, .demo3 .input-component, .demo4 .input-component, .demo5 .input-component {
-  margin-top: 130px;
+  top: 50%;
+  left: 25%;
+  transform: translate(-50%, -50%);
 }
 
 .icon-arrow-left {

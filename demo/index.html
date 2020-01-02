@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <meta name="keywords" content="date, time, datepicker, timepicker, tiny, 日期, 时间, 选择器, 日期选择器">
-  <title>tiny datepicker</title>
+  <title>tiny datepicker 演示</title>
   <link rel="stylesheet" href="./css/base.css"/>
   <link rel="stylesheet" href="./css/demo.css"/>
   <link rel="stylesheet" href="./lib/prism.min.css"/>
@@ -17,7 +17,7 @@
       <h3 class="navbar-brand">tiny-datepicker</h3>
       <ul class="nav navbar-nav">
         <li class="active"><a href="#">演示</a></li>
-        <li><a href="#">主题</a></li>
+        <li><a href="./theme.html">主题</a></li>
         <li><a href="https://github.com/Checkson/tiny-datepicker" target="_blank">github</a></li>
       </ul>
     </div>
@@ -29,7 +29,7 @@
     </div>
     <div class="row" style="padding-top: 10px;">
       <p class="p">
-        <a class="download" href="https://github.com/Checkson/tiny-datepicker/releases" download>下载 1.2.4</a>
+        <a class="download" href="https://github.com/Checkson/tiny-datepicker/releases" download>下载 1.2.5</a>
       </p>
     </div>
     <div class="row demo1">
@@ -93,36 +93,6 @@
       </div>
     </div>
     <div class="row demo3">
-      <h3 class="h3">国际化</h3>
-      <div class="demo-panel clearfix">
-        <div class="demo-view">
-          <div class="input-component">
-            <span class="demonstration">i18n</span>
-            <input class="input-control" placeholder="Select Date" type="text" id="i18nUsage"/>
-          </div>
-        </div>
-        <div class="demo-code">
-          <pre>
-            <code class="language-html">
-&lt;!-- HTML --&gt;
-&lt;template&gt;
-  &lt;input class="input-control" type="text" id="i18nUsage"/&gt;
-&lt;/template&gt;
-
-&lt;!-- JavaScript --&gt;
-&lt;script src="${yourPath}/dist/locales/tiny-datepicker.en.min.js"&gt;&lt;/script&gt;
-&lt;script&gt;
-  tinyDatePicker.init('#i18nUsage', {
-    clearable: true, // show clear button
-    lang: 'en' // select english for language
-  });
-&lt;/script&gt;
-            </code>
-          </pre>
-        </div>
-      </div>
-    </div>
-    <div class="row demo4">
       <h3 class="h3">禁用日期</h3>
       <div class="demo-panel clearfix">
         <div class="demo-view">
@@ -152,7 +122,7 @@
         </div>
       </div>
     </div>
-    <div class="row demo5">
+    <div class="row demo4">
       <h3 class="h3">定制箭头图标</h3>
       <div class="demo-panel clearfix">
         <div class="demo-view">
@@ -185,6 +155,64 @@
         </div>
       </div>
     </div>
+    <div class="row demo5">
+      <h3 class="h3">格式化</h3>
+      <div class="demo-panel clearfix">
+        <div class="demo-view">
+          <div class="input-component">
+            <span class="demonstration">格式化</span>
+            <input class="input-control" placeholder="选择日期" type="text" id="formatUsage"/>
+          </div>
+        </div>
+        <div class="demo-code">
+          <pre>
+            <code class="language-html">
+&lt;!-- HTML --&gt;
+&lt;template&gt;
+  &lt;input class="input-control" type="text" id="formatUsage"/&gt;
+&lt;/template&gt;
+
+&lt;!-- JavaScript --&gt;
+&lt;script&gt;
+  tinyDatePicker.init('#formatUsage', {
+    format: 'yyyy/mm/dd';
+  });
+&lt;/script&gt;
+            </code>
+          </pre>
+        </div>
+      </div>
+    </div>
+    <div class="row demo6">
+      <h3 class="h3">国际化</h3>
+      <div class="demo-panel clearfix">
+        <div class="demo-view">
+          <div class="input-component">
+            <span class="demonstration">i18n</span>
+            <input class="input-control" placeholder="Select Date" type="text" id="i18nUsage"/>
+          </div>
+        </div>
+        <div class="demo-code">
+          <pre>
+            <code class="language-html">
+&lt;!-- HTML --&gt;
+&lt;template&gt;
+  &lt;input class="input-control" type="text" id="i18nUsage"/&gt;
+&lt;/template&gt;
+
+&lt;!-- JavaScript --&gt;
+&lt;script src="${yourPath}/dist/locales/tiny-datepicker.en.min.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+  tinyDatePicker.init('#i18nUsage', {
+    clearable: true, // show clear button
+    lang: 'en' // select english for language
+  });
+&lt;/script&gt;
+            </code>
+          </pre>
+        </div>
+      </div>
+    </div>
   </main>
   <footer class="footer">
     <div class="container">
@@ -202,9 +230,8 @@
       clearable: true // 显示清除按钮
     });
     // 示例3
-    tinyDatePicker.init('#i18nUsage', {
-      clearable: true, // show clear button
-      lang: 'en' // select english for language
+    tinyDatePicker.init('#formatUsage', {
+      format: 'yyyy/mm/dd'
     });
     // 示例4
     tinyDatePicker.init('#disableDateUsage', {
@@ -220,6 +247,11 @@
         nextMonthArrow: '<i class="icon icon-arrow-right"></i>',
         nextYearArrow: '<i class="icon icon-arrow-right-o"></i>'
       }
+    });
+    // 示例6
+    tinyDatePicker.init('#i18nUsage', {
+      clearable: true, // show clear button
+      lang: 'en' // select english for language
     });
   </script>
 </body>

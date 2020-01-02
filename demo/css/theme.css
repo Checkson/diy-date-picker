@@ -1,0 +1,47 @@
+.theme-list {
+  margin-right: -15px;
+  list-style: none;
+}
+
+.theme-item {
+  float: left;
+  list-style-type: none;
+  margin-top: 15px;
+  padding-right: 15px;
+  width: 25%;
+}
+
+.theme-card {
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+  border: 1px solid #dcdcdc;
+}
+
+.card-header {
+  height: 40px;
+  line-height: 40px;
+  padding: 0 15px;
+  background-color: #eee;
+  border-bottom: 1px solid #dcdcdc;
+}
+
+.card-body {
+  position: relative;
+  height: 180px;
+}
+
+.input-group {
+  position: absolute;
+  width: 64%;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.link {
+  color: #00cba3;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
