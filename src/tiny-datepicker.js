@@ -533,11 +533,11 @@
     var winWidth = window.innerWidth;
     var winHeight = window.innerHeight;
 
-    var arrowSize = 8;
+    var arrowSize = 10;
 
     var className = 'tiny-datepicker__wrapper tiny-datepicker__';
 
-    if (winHeight < inputTop + datepickerHeight + arrowSize) {
+    if (winHeight < inputTop + datepickerHeight + arrowSize + inputHeight) {
       this.$datePicker.style.top = inputTop - datepickerHeight + scrollTop - arrowSize + 'px';
       className += 'top';
     } else {
