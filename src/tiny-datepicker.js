@@ -151,6 +151,10 @@
     }
   }
 
+  function isNull (arg) {
+    return arg === undefined || arg === null || arg === '';
+  }
+
   // ---------------- constants  ----------------
   var DEFAULTS = {
     clearable: false,
@@ -240,7 +244,7 @@
     var thisYear = this.state.year;
     var thisMonth = this.state.month;
 
-    if (!thisYear || !thisMonth) {
+    if (isNull(thisYear) || isNull(thisMonth)) {
       var defaultValue = this.settings.defaultValue;
       var resDate = null;
 
@@ -770,7 +774,7 @@
     var today = new Date();
 
     // if it is undefined cell
-    if (data === undefined) {
+    if (isNull(data)) {
       className = 'disabled';
     }
 

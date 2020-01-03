@@ -1,6 +1,6 @@
 {
   "name": "tiny-datepicker",
-  "version": "1.2.5",
+  "version": "1.2.6",
   "description": "A tiny datepicker implemented in native JavaScript.",
   "main": "src/tiny-datepicker.js",
   "directories": {
