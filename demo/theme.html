@@ -25,13 +25,14 @@
     <div class="row">
       <h2 class="h2">tiny-datepicker 主题</h2>
       <p class="p">若 tiny-datepicker 主题库没有您需要的合适主题，您可以在 <a class="link" href="https://github.com/Checkson/tiny-datepicker/issues" target="_blank">issue</a> 中提出，也可以自己克隆工程下来，然后自由调整样式，最好会一点点的 <a class="link" href="http://sass.bootcss.com/" target="_blank">sass</a>。</p>
-      <p class="p">另外，也非常欢迎广大朋友投稿一些精美的主题，如果通过审核，会出现在主题库中，以便供其他人使用。</p>
+      <p class="p">另外，也非常欢迎广大朋友积极投稿一些精美的主题，如果通过审核，会出现在主题库中，以便供其他人使用。</p>
     </div>
     <ul class="theme-list" id="themeList"></ul>
   </main>
   <footer class="footer">
     <div class="container">
-      <p class="copyright">Copyright ©2019-2020 Checkson</p>
+      <p class="copyright">Copyright ©2019-<span id="endYear"></span> Checkson</p>
+      <script>document.getElementById('endYear').innerHTML = new Date().getFullYear()</script>
     </div>
   </footer>
   <script src="../dist/tiny-datepicker.min.js"></script>
@@ -67,6 +68,12 @@
         title: 'dark',
         primaryColor: '#242424',
         styleName: 'dark.'
+      },
+      {
+        id: 'chineseRedTheme',
+        title: 'chinese-red',
+        primaryColor: '#CE1126',
+        styleName: 'chinese-red.'
       }
     ];
     

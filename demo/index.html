@@ -29,7 +29,7 @@
     </div>
     <div class="row" style="padding-top: 10px;">
       <p class="p">
-        <a class="download" href="https://github.com/Checkson/tiny-datepicker/releases" download>下载 1.2.5</a>
+        <a class="download" href="https://github.com/Checkson/tiny-datepicker/releases" download>下载 1.2.6</a>
       </p>
     </div>
     <div class="row demo1">
@@ -216,7 +216,8 @@
   </main>
   <footer class="footer">
     <div class="container">
-      <p class="copyright">Copyright ©2019-2020 Checkson</p>
+      <p class="copyright">Copyright ©2019-<span id="endYear"></span> Checkson</p>
+      <script>document.getElementById('endYear').innerHTML = new Date().getFullYear()</script>
     </div>
   </footer>
   <script src="./lib/prism.min.js"></script>
