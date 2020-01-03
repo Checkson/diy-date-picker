@@ -211,7 +211,14 @@ $x-arrow-border-x: $x-arrow-border * 5 - 1;
   
   &__month-table, &__year-table {
     td {
-      padding: 15px 0;
+      span {
+        width: 2 * $td-span-size;
+        height: 2 * $td-span-size;
+        line-height: 2 * $td-span-size;
+        display: inline-block;   
+        vertical-align: middle;
+        border-radius: 4px;
+      }
       &.selected span {
         color: $primary-color;
       }
