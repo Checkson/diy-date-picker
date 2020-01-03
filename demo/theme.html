@@ -4,28 +4,28 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <meta name="keywords" content="date, time, datepicker, timepicker, tiny, 日期, 时间, 选择器, 日期选择器">
-  <title>tiny datepicker 主题</title>
+  <meta name="keywords" content="date, time, datepicker, timepicker, diy, 日期, 时间, 选择器, 日期选择器">
+  <title>diy date picker 主题</title>
   <link rel="icon" href="./favicon.ico" type="image/x-icon"/>
   <link rel="stylesheet" href="./css/base.css"/>
   <link rel="stylesheet" href="./css/theme.css"/>
-  <link id="themeLink" rel="stylesheet" href="../dist/themes/tiny-datepicker.element-ui.min.css"/>
+  <link id="themeLink" rel="stylesheet" href="../dist/themes/diy-date-picker.element-ui.min.css"/>
 </head>
 <body>
   <header class="header">
     <div class="navbar-inner container">
-      <h3 class="navbar-brand">tiny-datepicker</h3>
+      <h3 class="navbar-brand">diy-date-picker</h3>
       <ul class="nav navbar-nav">
         <li><a href="./index.html">演示</a></li>
         <li class="active"><a href="#">主题</a></li>
-        <li><a href="https://github.com/Checkson/tiny-datepicker" target="_blank">github</a></li>
+        <li><a href="https://github.com/Checkson/diy-date-picker" target="_blank">github</a></li>
       </ul>
     </div>
   </header>
   <main class="content container">
     <div class="row">
-      <h2 class="h2">tiny-datepicker 主题</h2>
-      <p class="p">若 tiny-datepicker 主题库没有您需要的合适主题，您可以在 <a class="link" href="https://github.com/Checkson/tiny-datepicker/issues" target="_blank">issue</a> 中提出，也可以自己克隆工程下来，然后自由调整样式，最好会一点点的 <a class="link" href="http://sass.bootcss.com/" target="_blank">sass</a>。</p>
+      <h2 class="h2">diy-date-picker 主题</h2>
+      <p class="p">若 diy-date-picker 主题库没有您需要的合适主题，您可以在 <a class="link" href="https://github.com/Checkson/diy-date-picker/issues" target="_blank">issue</a> 中提出，也可以自己克隆工程下来，然后自由调整样式，最好会一点点的 <a class="link" href="http://sass.bootcss.com/" target="_blank">sass</a>。</p>
       <p class="p">另外，也非常欢迎广大朋友积极投稿一些精美的主题，如果通过审核，会出现在主题库中，以便供其他人使用。</p>
     </div>
     <ul class="theme-list" id="themeList"></ul>
@@ -36,7 +36,7 @@
       <script>document.getElementById('endYear').innerHTML = new Date().getFullYear()</script>
     </div>
   </footer>
-  <script src="../dist/tiny-datepicker.min.js"></script>
+  <script src="../dist/diy-date-picker.min.js"></script>
   <script>
     // 主题配置
     var themesArr = [
@@ -103,7 +103,7 @@
       oThemeList.appendChild(oLi);
 
       // datepicker 初始化
-      tinyDatePicker.init('#' + item.id, {
+      diyDatePicker.init('#' + item.id, {
         clearable: true
       });
 
@@ -112,7 +112,7 @@
 
       oInput.addEventListener('focus', function () {
         this.style.borderColor = item.primaryColor;
-        document.getElementById('themeLink').setAttribute('href', '../dist/themes/tiny-datepicker.' + item.styleName + 'min.css');
+        document.getElementById('themeLink').setAttribute('href', '../dist/themes/diy-date-picker.' + item.styleName + 'min.css');
       });
 
       oInput.addEventListener('blur', function () {

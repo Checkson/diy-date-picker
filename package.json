@@ -1,8 +1,8 @@
 {
-  "name": "tiny-datepicker",
+  "name": "diy-date-picker",
   "version": "1.2.6",
-  "description": "A tiny datepicker implemented in native JavaScript.",
-  "main": "src/tiny-datepicker.js",
+  "description": "A date picker plugin implemented in native JavaScript.",
+  "main": "src/diy-date-picker.js",
   "directories": {
     "test": "tests"
   },
@@ -14,7 +14,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Checkson/tiny-datepicker.git"
+    "url": "git+https://github.com/Checkson/diy-date-picker.git"
   },
   "keywords": [
     "datepicker",
@@ -26,9 +26,9 @@
   "author": "Checkson",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Checkson/tiny-datepicker/issues"
+    "url": "https://github.com/Checkson/diy-date-picker/issues"
   },
-  "homepage": "https://github.com/Checkson/tiny-datepicker#readme",
+  "homepage": "https://github.com/Checkson/diy-date-picker#readme",
   "devDependencies": {
     "eslint": "^6.7.2",
     "eslint-config-standard": "^14.1.0",

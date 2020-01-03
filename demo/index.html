@@ -4,33 +4,33 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <meta name="keywords" content="date, time, datepicker, timepicker, tiny, 日期, 时间, 选择器, 日期选择器">
-  <title>tiny datepicker 演示</title>
+  <meta name="keywords" content="date, time, datepicker, timepicker, diy, 日期, 时间, 选择器, 日期选择器">
+  <title>diy date picker 演示</title>
   <link rel="icon" href="./favicon.ico" type="image/x-icon"/>
   <link rel="stylesheet" href="./css/base.css"/>
   <link rel="stylesheet" href="./css/demo.css"/>
   <link rel="stylesheet" href="./lib/prism.min.css"/>
-  <link rel="stylesheet" href="../dist/themes/tiny-datepicker.min.css"/>
+  <link rel="stylesheet" href="../dist/themes/diy-date-picker.min.css"/>
 </head>
 <body>
   <header class="header">
     <div class="navbar-inner container">
-      <h3 class="navbar-brand">tiny-datepicker</h3>
+      <h3 class="navbar-brand">diy-date-picker</h3>
       <ul class="nav navbar-nav">
         <li class="active"><a href="#">演示</a></li>
         <li><a href="./theme.html">主题</a></li>
-        <li><a href="https://github.com/Checkson/tiny-datepicker" target="_blank">github</a></li>
+        <li><a href="https://github.com/Checkson/diy-date-picker" target="_blank">github</a></li>
       </ul>
     </div>
   </header>
   <main class="content container">
     <div class="row">
-      <h2 class="h2">tiny-datepicker 演示</h2>
-      <p class="p">tiny-datepicker 是一个用原生的 JavaScript 实现的日期选择器的插件，无依赖，非常轻小。</p>
+      <h2 class="h2">diy-date-picker 演示</h2>
+      <p class="p">diy-date-picker 是一个用原生的 JavaScript 实现的日期选择器的插件，无依赖，非常轻小。</p>
     </div>
     <div class="row" style="padding-top: 10px;">
       <p class="p">
-        <a class="download" href="https://github.com/Checkson/tiny-datepicker/releases/download/v1.2.6/tiny-datepicker-1.2.6-dist.zip" download>下载 1.2.6</a>
+        <a class="download" href="https://github.com/Checkson/diy-date-picker/releases/download/v1.2.6/diy-date-picker-1.2.6-dist.zip" download>下载 1.2.6</a>
       </p>
     </div>
     <div class="row demo1">
@@ -52,7 +52,7 @@
 
 &lt;!-- JavaScript --&gt;
 &lt;script&gt;
-  tinyDatePicker.init('#baseUsage');
+  diyDatePicker.init('#baseUsage');
 &lt;/script&gt;
             </code>
           </pre>
@@ -84,7 +84,7 @@
 
 &lt;!-- JavaScript --&gt;
 &lt;script&gt;
-  tinyDatePicker.init('.input-group', {
+  diyDatePicker.init('.input-group', {
     clearable: true // 显示清除按钮
   });
 &lt;/script&gt;
@@ -112,7 +112,7 @@
 
 &lt;!-- JavaScript --&gt;
 &lt;script&gt;
-  tinyDatePicker.init('#disableDateUsage', {
+  diyDatePicker.init('#disableDateUsage', {
     disabledDate: function (date) { // 参数 date 是日期选择器中的某一个日期
       return date.getTime() > new Date().getTime();
     }
@@ -142,7 +142,7 @@
 
 &lt;!-- JavaScript --&gt;
 &lt;script&gt;
-  tinyDatePicker.init('#templatesUsage', {
+  diyDatePicker.init('#templatesUsage', {
     templates: {
       prevYearArrow: '&lt;i class="icon icon-arrow-left-o"&gt;&lt;/i&gt;',
       prevMonthArrow: '&lt;i class="icon icon-arrow-left"&gt;&lt;/i&gt;',
@@ -175,7 +175,7 @@
 
 &lt;!-- JavaScript --&gt;
 &lt;script&gt;
-  tinyDatePicker.init('#formatUsage', {
+  diyDatePicker.init('#formatUsage', {
     format: 'yyyy/mm/dd';
   });
 &lt;/script&gt;
@@ -202,9 +202,9 @@
 &lt;/template&gt;
 
 &lt;!-- JavaScript --&gt;
-&lt;script src="${yourPath}/dist/locales/tiny-datepicker.en.min.js"&gt;&lt;/script&gt;
+&lt;script src="${yourPath}/dist/locales/diy-date-picker.en.min.js"&gt;&lt;/script&gt;
 &lt;script&gt;
-  tinyDatePicker.init('#i18nUsage', {
+  diyDatePicker.init('#i18nUsage', {
     clearable: true, // show clear button
     lang: 'en' // select english for language
   });
@@ -222,27 +222,27 @@
     </div>
   </footer>
   <script src="./lib/prism.min.js"></script>
-  <script src="../dist/tiny-datepicker.min.js"></script>
-  <script src="../dist/locales/tiny-datepicker.en.min.js"></script>
+  <script src="../dist/diy-date-picker.min.js"></script>
+  <script src="../dist/locales/diy-date-picker.en.min.js"></script>
   <script>
     // 示例1
-    tinyDatePicker.init('#baseUsage');
+    diyDatePicker.init('#baseUsage');
     // 示例2
-    tinyDatePicker.init('.input-group', {
+    diyDatePicker.init('.input-group', {
       clearable: true // 显示清除按钮
     });
     // 示例3
-    tinyDatePicker.init('#formatUsage', {
+    diyDatePicker.init('#formatUsage', {
       format: 'yyyy/mm/dd'
     });
     // 示例4
-    tinyDatePicker.init('#disableDateUsage', {
+    diyDatePicker.init('#disableDateUsage', {
       disabledDate: function (date) { // 参数 date 是日期选择器中的某一个日期
         return date.getTime() > new Date().getTime();
       }
     });
     // 示例5
-    tinyDatePicker.init('#templatesUsage', {
+    diyDatePicker.init('#templatesUsage', {
       templates: {
         prevYearArrow: '<i class="icon icon-arrow-left-o"></i>',
         prevMonthArrow: '<i class="icon icon-arrow-left"></i>',
@@ -251,7 +251,7 @@
       }
     });
     // 示例6
-    tinyDatePicker.init('#i18nUsage', {
+    diyDatePicker.init('#i18nUsage', {
       clearable: true, // show clear button
       lang: 'en' // select english for language
     });

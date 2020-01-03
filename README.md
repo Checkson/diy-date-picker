@@ -1,33 +1,33 @@
-# tiny-datepicker
+# diy-date-picker
 
-一个用原生的 JavaScript 实现的、轻量的日期选择器。
+一个用原生的 JavaScript 实现、无依赖的日期选择器。
 
 ## 兼容性
 
 IE10及以上。
 
-> 因为 IE9 中的 table 标签中的 innerHTML 属性是只读的，但是 tiny-datepicker 中大量用到 innerHTML 属性作为写入的操作，考虑到 IE9 迟早都会被淘汰，所以该插件并没有打算兼容 IE9。
+> 因为 IE9 中的 table 标签中的 innerHTML 属性是只读的，但是 diy-date-picker 中大量用到 innerHTML 属性作为写入的操作，考虑到 IE9 迟早都会被淘汰，所以该插件并没有打算兼容 IE9。
 
 ## 演示
 
-[在线演示](https://checkson.github.io/tiny-datepicker/demo/)
+[在线演示](https://checkson.github.io/diy-date-picker/demo/)
 
 ## 安装
 
 ```shell
-$ npm install tiny-datepicker --save
+$ npm install diy-date-picker --save
 ```
 
 或者
 
 ```shell
-$ yarn add tiny-datepicker
+$ yarn add diy-date-picker
 ```
 或者
 
 ```html
 <!-- 页面常规引入 -->
-<script src="${yourPath}/tiny-datepicker/dist/tiny-datepicker.min.js"></script>
+<script src="${yourPath}/diy-date-picker/dist/diy-date-picker.min.js"></script>
 ```
 
 ## 快速开始
@@ -42,7 +42,7 @@ $ yarn add tiny-datepicker
 <input class="input-control" id="datePicker"/>
 
 <script>
-  tinyDatePicker.init('#datePicker');
+  diyDatePicker.init('#datePicker');
 </script>
 ```
 
@@ -57,7 +57,7 @@ $ yarn add tiny-datepicker
 </div>
 
 <script>
-  tinyDatePicker.init('.input-group');
+  diyDatePicker.init('.input-group');
 </script>
 ```
 
@@ -93,7 +93,7 @@ zIndex | number | 2019 | 日期选择器显示时其css中z-index属性的值。
 初始化日期选择器的方法，它接受两个参数：`selectors` 和 `options`。
 
 ```javascript
-tinyDatePicker.init('#datepicker', {
+diyDatePicker.init('#datepicker', {
   clearable: true
 });
 ```
@@ -107,7 +107,7 @@ tinyDatePicker.init('#datepicker', {
 销毁日期选择器的方法，它接受一个参数：`selectors`。
 
 ```javascript
-tinyDatePicker.destroy('#datepicker');
+diyDatePicker.destroy('#datepicker');
 ```
 
 ### show
@@ -115,7 +115,7 @@ tinyDatePicker.destroy('#datepicker');
 显示日期选择器的方法，它接受一个参数：`selectors`。
 
 ```javascript
-tinyDatePicker.show('#datepicker');
+diyDatePicker.show('#datepicker');
 ```
 
 ### hide
@@ -123,7 +123,7 @@ tinyDatePicker.show('#datepicker');
 隐藏日期选择器的方法，它接受一个参数：`selectors`。
 
 ```javascript
-tinyDatePicker.hide('#datepicker');
+diyDatePicker.hide('#datepicker');
 ```
 
 ### setDate
@@ -131,7 +131,7 @@ tinyDatePicker.hide('#datepicker');
 设置日期的方法，它接受两个参数：`selectors` 和 `newDate`。`newDate` 可以是合法的 `Date` 的实例，也可以是数字类型的时间戳（`timestamp`） ，也可以能被 `new Date` 正确解析的日期字符串。
 
 ```javascript
-tinyDatePicker.setDate('#datepicker', '2019-08-15');
+diyDatePicker.setDate('#datepicker', '2019-08-15');
 ```
 
 ### getDate
@@ -139,7 +139,7 @@ tinyDatePicker.setDate('#datepicker', '2019-08-15');
 获取日期的方法，它接受一个参数：`selectors` 。这里需要强调的是，该函数返回的是一个日期数组，里面包含的是可能是多个 `selectors` 返回的日期；如果 `selectors` 实例只有一个，那么返回的日期数组长度为1.
 
 ```javascript
-tinyDatePicker.setDate('#datepicker');
+diyDatePicker.setDate('#datepicker');
 ```
 
 ### clearDate
@@ -147,20 +147,20 @@ tinyDatePicker.setDate('#datepicker');
 清除日期的方法，它接受一个参数：`selectors` 。
 
 ```javascript
-tinyDatePicker.clearDate('#datepicker');
+diyDatePicker.clearDate('#datepicker');
 ```
 
 ## 主题
 
-[在线演示](https://checkson.github.io/tiny-datepicker/demo/theme.html)，请按照自身需求引入不同的主题文件，主题文件在 `dist/themes` 目录下。
+[在线演示](https://checkson.github.io/diy-date-picker/demo/theme.html)，请按照自身需求引入不同的主题文件，主题文件在 `dist/themes` 目录下。
 
 ## 国际化
 
-该插件支持国际化。默认是简体中文（zh-CN）。其他可以用的翻译可以在 dist/locales 目录中找到，只需在插件之后引入您想要的语言环境即可。想要添加新的语言，只需要在全局对象 tinyDatePicker.langs 中添加一个语言键值即可。例如：
+该插件支持国际化。默认是简体中文（zh-CN）。其他可以用的翻译可以在 dist/locales 目录中找到，只需在插件之后引入您想要的语言环境即可。想要添加新的语言，只需要在全局对象 diyDatePicker.langs 中添加一个语言键值即可。例如：
 
 ```javascript
 ;(function (global) {
-  global.tinyDatePicker.langs['zh-CN'] = {
+  global.diyDatePicker.langs['zh-CN'] = {
     days: ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'],
     daysShort: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
     daysMin: ['日', '一', '二', '三', '四', '五', '六'],
@@ -177,7 +177,7 @@ tinyDatePicker.clearDate('#datepicker');
 }(window || self));
 ```
 
-若该目录没有您想要的语言，可以提交添加语言合并的分支，或者在 [issues](https://github.com/Checkson/tiny-datepicker/issues) 提出，作者会及时跟进。
+若该目录没有您想要的语言，可以提交添加语言合并的分支，或者在 [issues](https://github.com/Checkson/diy-date-picker/issues) 提出，作者会及时跟进。
 
 ## 参考
 
