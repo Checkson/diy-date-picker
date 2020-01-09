@@ -2,6 +2,7 @@
  * Copyright (c) 2019-12-03 Checkson.
  * Licensed under the MIT License (MIT).
  * Github:https://github.com/Checkson/diy-date-picker
+ * version: v1.2.7
  */
 
 ;(function (factory) {
@@ -199,23 +200,24 @@
   }
 
   DatePicker.prototype.register = function () {
-    // setData
+    // set data
     setData(this.$el, 'datepicker', this);
+    // init options
+    this.initOptions();
     // add event listener
     this.addEventListener();
   };
 
+  DatePicker.prototype.initOptions = function () {
+    this.settings = merge({}, DEFAULTS, this.options);
+  };
+
   DatePicker.prototype.init = function () {
-    this.initOptions();
     this.initData();
     this.initDom();
     this.render();
     this.initEvent();
     this.blur();
-  };
-
-  DatePicker.prototype.initOptions = function () {
-    this.settings = merge({}, DEFAULTS, this.options);
   };
 
   DatePicker.prototype.initData = function () {
@@ -1031,8 +1033,10 @@
 
     trigger(this.$input, 'change');
 
-    this.changeView(0);
-    this.renderForShowStatus();
+    if (this.$datePicker) {
+      this.changeView(0);
+      this.renderForShowStatus();
+    }
   };
 
   DatePicker.prototype.parseFormat = function (formatStr) {

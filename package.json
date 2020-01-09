@@ -1,6 +1,6 @@
 {
   "name": "diy-date-picker",
-  "version": "1.2.6",
+  "version": "1.2.7",
   "description": "A date picker plugin implemented in native JavaScript.",
   "main": "src/diy-date-picker.js",
   "directories": {

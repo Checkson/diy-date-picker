@@ -200,6 +200,22 @@ a {
   width: 100%;
 }
 
+.download-master {
+  display: inline-block;
+  background-color: #fff;
+  font-size: 14px;
+  padding: 6px 12px;
+  outline: none;
+  cursor: pointer;
+  position: relative;
+  color: #333;
+  border: 1px solid #dcdcdc;
+}
+
+.download-master:hover {
+  background-color: #eee;
+}
+
 .input-group {
   position: relative;
 }

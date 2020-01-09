@@ -139,7 +139,7 @@ diyDatePicker.setDate('#datepicker', '2019-08-15');
 获取日期的方法，它接受一个参数：`selectors` 。这里需要强调的是，该函数返回的是一个日期数组，里面包含的是可能是多个 `selectors` 返回的日期；如果 `selectors` 实例只有一个，那么返回的日期数组长度为1.
 
 ```javascript
-diyDatePicker.setDate('#datepicker');
+diyDatePicker.getDate('#datepicker');
 ```
 
 ### clearDate
