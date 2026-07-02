@@ -2,7 +2,7 @@
  * Copyright (c) 2019-12-03 Checkson.
  * Licensed under the MIT License (MIT).
  * Github:https://github.com/Checkson/diy-date-picker
- * version: v1.2.7
+ * version: v1.3.0
  */
 
 ;(function (factory) {
@@ -97,10 +97,147 @@
   }
 
   function isDate (date) {
-    if (date === null || date === 'undefined') return false;
+    if (date === null || date === undefined) return false;
     if (isNaN(new Date(date).getTime())) return false;
     if (Array.isArray(date)) return false; // deal with `new Date([ new Date() ]) -> new Date()`
     return true;
+  }
+
+  function escapeRegExp (str) {
+    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+
+  function parseFormatStr (formatStr) {
+    var separators = formatStr.replace(VALID_FORMAT, '\0').split('\0');
+    var parts = formatStr.match(VALID_FORMAT);
+
+    if (!separators || !separators.length || !parts || parts.length === 0) {
+      return null;
+    }
+
+    return {
+      separators: separators,
+      parts: parts
+    };
+  }
+
+  function parseDate (dateStr, formatStr, i18n) {
+    if (!dateStr) {
+      return null;
+    }
+
+    if (formatStr === 'timestamp') {
+      var ts = Number(dateStr);
+      return isNaN(ts) ? null : new Date(ts);
+    }
+
+    var format = parseFormatStr(formatStr);
+    if (!format) {
+      return null;
+    }
+
+    var regex = '^';
+    var parts = format.parts;
+    var seps = format.separators;
+    var i;
+
+    for (i = 0; i < parts.length; i++) {
+      if (seps[i]) {
+        regex += escapeRegExp(seps[i]);
+      }
+      switch (parts[i]) {
+      case 'yyyy':
+        regex += '(\\d{4})';
+        break;
+      case 'yy':
+        regex += '(\\d{2})';
+        break;
+      case 'mm':
+        regex += '(\\d{2})';
+        break;
+      case 'm':
+        regex += '(\\d{1,2})';
+        break;
+      case 'dd':
+        regex += '(\\d{2})';
+        break;
+      case 'd':
+        regex += '(\\d{1,2})';
+        break;
+      case 'MM':
+        regex += '(' + i18n.months.map(escapeRegExp).join('|') + ')';
+        break;
+      case 'M':
+        regex += '(' + i18n.monthsShort.map(escapeRegExp).join('|') + ')';
+        break;
+      case 'DD':
+        regex += '(' + i18n.days.map(escapeRegExp).join('|') + ')';
+        break;
+      case 'D':
+        regex += '(' + i18n.daysShort.map(escapeRegExp).join('|') + ')';
+        break;
+      default:
+        return null;
+      }
+    }
+
+    if (seps[parts.length]) {
+      regex += escapeRegExp(seps[parts.length]);
+    }
+    regex += '$';
+
+    var match = dateStr.match(new RegExp(regex));
+    if (!match) {
+      return null;
+    }
+
+    var year;
+    var month;
+    var day;
+    var matchIndex = 1;
+
+    for (i = 0; i < parts.length; i++) {
+      var val = match[matchIndex++];
+      switch (parts[i]) {
+      case 'yyyy':
+        year = parseInt(val, 10);
+        break;
+      case 'yy':
+        year = 2000 + parseInt(val, 10);
+        break;
+      case 'mm':
+      case 'm':
+        month = parseInt(val, 10);
+        break;
+      case 'MM':
+        month = i18n.months.indexOf(val) + 1;
+        break;
+      case 'M':
+        month = i18n.monthsShort.indexOf(val) + 1;
+        break;
+      case 'dd':
+      case 'd':
+        day = parseInt(val, 10);
+        break;
+      case 'DD':
+        day = i18n.days.indexOf(val);
+        break;
+      case 'D':
+        day = i18n.daysShort.indexOf(val);
+        break;
+      }
+    }
+
+    if (year == null || !month || !day) {
+      return null;
+    }
+
+    var date = new Date(year, month - 1, day);
+    if (date.getFullYear() !== year || date.getMonth() + 1 !== month || date.getDate() !== day) {
+      return null;
+    }
+
+    return date;
   }
 
   function isEqualDate (date1, date2) {
@@ -131,7 +268,7 @@
       }
     } else if (selectors instanceof NodeList || selectors instanceof HTMLCollection) { // a series of node
       for (var j = 0, len2 = selectors.length; j < len2; j++) {
-        els.push(selectors[i]);
+        els.push(selectors[j]);
       }
     } else if (selectors && typeof selectors === 'object' && selectors instanceof HTMLElement) { // a single node
       els.push(selectors);
@@ -167,7 +304,7 @@
     showWeekDays: true,
     templates: null,
     weekStart: 0,
-    zIndex: 2019
+    zIndex: 9999
   };
 
   var VALID_FORMAT = /dd?|DD?|mm?|MM?|yy(?:yy)?/g;
@@ -178,7 +315,12 @@
   function DatePicker ($el, options) {
     this.$el = $el;
     this.$input = getDOMTagName($el) === 'input' ? $el : $el.querySelector('input');
+    if (!this.$input) {
+      throw new Error('diy-date-picker: input element is required.');
+    }
     this.options = options || {};
+    this._pickerHandlers = null;
+    this._positionBound = false;
     this.$datePicker = null;
     this.value = null;
     this.state = {
@@ -251,7 +393,7 @@
       var resDate = null;
 
       if (isDate(defaultValue)) { // valid date format: timestamp、instance of Date、strings etc.
-        resDate = new Date(defaultValue); ;
+        resDate = new Date(defaultValue);
       } else { // no default value
         resDate = new Date();
       }
@@ -471,6 +613,8 @@
     if (this.$datePicker) {
       this.$datePicker.style.display = 'block';
       this.state.isVisible = true;
+      this.bindPositionListeners();
+      this.adjustPosition();
     }
   };
 
@@ -478,22 +622,62 @@
     if (this.$datePicker) {
       this.$datePicker.style.display = 'none';
       this.state.isVisible = false;
+      this.unbindPositionListeners();
     }
   };
 
-  DatePicker.prototype.blur = function () {
-    var inputValue = this.$input.value;
-    var value = this.value;
+  DatePicker.prototype.bindPositionListeners = function () {
+    if (this._positionBound) {
+      return;
+    }
+    this._positionBound = true;
+    this.handleAdjustPosition = this.adjustPosition.bind(this);
+    window.addEventListener('resize', this.handleAdjustPosition);
+    window.addEventListener('scroll', this.handleAdjustPosition, true);
+  };
 
-    if (value && isDate(value)) { // value is not null
-      if (inputValue && isDate(inputValue)) { // value and inputValue is not null
-        !isEqualDate(value, inputValue) && this.setDate(inputValue);
-      } else { // value is not null, inputValue is null
+  DatePicker.prototype.unbindPositionListeners = function () {
+    if (!this._positionBound) {
+      return;
+    }
+    this._positionBound = false;
+    window.removeEventListener('resize', this.handleAdjustPosition);
+    window.removeEventListener('scroll', this.handleAdjustPosition, true);
+  };
+
+  DatePicker.prototype.parseInputValue = function (inputValue) {
+    if (!inputValue) {
+      return null;
+    }
+
+    var formatStr = this.getFinalValue('format');
+    var parsed = parseDate(inputValue, formatStr, this.getI18n());
+
+    if (parsed) {
+      return parsed;
+    }
+
+    if (isDate(inputValue)) {
+      return new Date(inputValue);
+    }
+
+    return null;
+  };
+
+  DatePicker.prototype.blur = function () {
+    var inputValue = this.$input.value.trim();
+    var value = this.value;
+    var parsedInput = inputValue ? this.parseInputValue(inputValue) : null;
+
+    if (value && isDate(value)) {
+      if (parsedInput) {
+        !isEqualDate(value, parsedInput) && this.setDate(parsedInput);
+      } else {
         this.setDate(value);
       }
-    } else if (inputValue && isDate(inputValue)) { // value is null, inputValue not null
-      this.setDate(inputValue);
-    } else { // value and inputValue is null
+    } else if (parsedInput) {
+      this.setDate(parsedInput);
+    } else {
       this.setDate(null);
     }
   };
@@ -511,7 +695,7 @@
     // Tab
     if (keyCode === 9) {
       setTimeout(function () {
-        if (this.$input !== document.activeElement) {
+        if (self.$input !== document.activeElement) {
           self.hide();
           self.blur();
         }
@@ -644,9 +828,15 @@
     var month = this.state.month;
     var className = '';
 
-    if (data.month < month && data.year <= year) { // prev-month
+    var cellValue = new Date(data.year, data.month - 1, data.date).setHours(0, 0, 0, 0);
+    var monthStart = new Date(year, month - 1, 1).getTime();
+    var monthEnd = new Date(year, month, 0).setHours(0, 0, 0, 0);
+
+    if (cellValue < monthStart) {
       className = 'prev-month';
-    } else if (data.month === month && data.year === year) { // this month
+    } else if (cellValue > monthEnd) {
+      className = 'next-month';
+    } else {
       className = 'available';
       // check if today
       var today = new Date();
@@ -660,8 +850,6 @@
           this.value.getDate() === data.date) {
         className += ' selected';
       }
-    } else { // next-month
-      className = 'next-month';
     }
 
     // settings check
@@ -795,14 +983,26 @@
   };
 
   DatePicker.prototype.initEvent = function () {
-    this.$showMonth.addEventListener('click', this.changeMonthView.bind(this));
-    this.$showYear.addEventListener('click', this.changeYearView.bind(this));
-    this.$prevYear.addEventListener('click', this.doPrevYear.bind(this));
-    this.$prevMonth.addEventListener('click', this.doPrevMonth.bind(this));
-    this.$nextMonth.addEventListener('click', this.doNextMonth.bind(this));
-    this.$nextYear.addEventListener('click', this.doNextYear.bind(this));
-    this.$nowBtn.addEventListener('click', this.setTodayValue.bind(this));
-    this.$clearBtn.addEventListener('click', this.doClearDate.bind(this));
+    this._pickerHandlers = {
+      showMonth: this.changeMonthView.bind(this),
+      showYear: this.changeYearView.bind(this),
+      prevYear: this.doPrevYear.bind(this),
+      prevMonth: this.doPrevMonth.bind(this),
+      nextMonth: this.doNextMonth.bind(this),
+      nextYear: this.doNextYear.bind(this),
+      nowBtn: this.setTodayValue.bind(this),
+      clearBtn: this.doClearDate.bind(this),
+      choose: []
+    };
+
+    this.$showMonth.addEventListener('click', this._pickerHandlers.showMonth);
+    this.$showYear.addEventListener('click', this._pickerHandlers.showYear);
+    this.$prevYear.addEventListener('click', this._pickerHandlers.prevYear);
+    this.$prevMonth.addEventListener('click', this._pickerHandlers.prevMonth);
+    this.$nextMonth.addEventListener('click', this._pickerHandlers.nextMonth);
+    this.$nextYear.addEventListener('click', this._pickerHandlers.nextYear);
+    this.$nowBtn.addEventListener('click', this._pickerHandlers.nowBtn);
+    this.$clearBtn.addEventListener('click', this._pickerHandlers.clearBtn);
     this.initChooseEvent();
   };
 
@@ -812,14 +1012,39 @@
     for (var i = 0, len1 = $elArr.length; i < len1; i++) {
       var $tdArr = $elArr[i].querySelectorAll('tbody tr td');
       for (var j = 0, len2 = $tdArr.length; j < len2; j++) {
-        $tdArr[j].addEventListener('click', this[methodArr[i]].bind(this, j, $tdArr[j]));
+        var handler = this[methodArr[i]].bind(this, j, $tdArr[j]);
+        this._pickerHandlers.choose.push({ el: $tdArr[j], handler: handler });
+        $tdArr[j].addEventListener('click', handler);
       }
     }
   };
 
+  DatePicker.prototype.removePickerEventListener = function () {
+    if (!this._pickerHandlers) {
+      return;
+    }
+
+    var handlers = this._pickerHandlers;
+
+    this.$showMonth.removeEventListener('click', handlers.showMonth);
+    this.$showYear.removeEventListener('click', handlers.showYear);
+    this.$prevYear.removeEventListener('click', handlers.prevYear);
+    this.$prevMonth.removeEventListener('click', handlers.prevMonth);
+    this.$nextMonth.removeEventListener('click', handlers.nextMonth);
+    this.$nextYear.removeEventListener('click', handlers.nextYear);
+    this.$nowBtn.removeEventListener('click', handlers.nowBtn);
+    this.$clearBtn.removeEventListener('click', handlers.clearBtn);
+
+    handlers.choose.forEach(function (item) {
+      item.el.removeEventListener('click', item.handler);
+    });
+
+    this._pickerHandlers = null;
+  };
+
   DatePicker.prototype.onChooseDate = function (index, $el) {
     // if disabled
-    if ($el.className.search(/\bdisabled\b/) > -1) {
+    if ($el.classList.contains('disabled')) {
       return;
     }
 
@@ -833,7 +1058,7 @@
 
   DatePicker.prototype.onChooseMonth = function (index, $el) {
     // if disabled
-    if ($el.className.search(/\bdisabled\b/) > -1) {
+    if ($el.classList.contains('disabled')) {
       return;
     }
 
@@ -844,7 +1069,7 @@
 
   DatePicker.prototype.onChooseYear = function (index, $el) {
     // if disabled
-    if ($el.className.search(/\bdisabled\b/) > -1) {
+    if ($el.classList.contains('disabled')) {
       return;
     }
 
@@ -1040,17 +1265,13 @@
   };
 
   DatePicker.prototype.parseFormat = function (formatStr) {
-    var separators = formatStr.replace(VALID_FORMAT, '\0').split('\0');
-    var parts = formatStr.match(VALID_FORMAT);
+    var format = parseFormatStr(formatStr);
 
-    if (!separators || !separators.length || !parts || parts.length === 0) {
+    if (!format) {
       throw new Error('Invalid date format.');
     }
 
-    return {
-      separators: separators,
-      parts: parts
-    };
+    return format;
   };
 
   DatePicker.prototype.getDate = function () {
@@ -1166,12 +1387,14 @@
 
   DatePicker.prototype.destroy = function () {
     this.hide();
+    this.unbindPositionListeners();
     // remove event listener
     this.removeEventListener();
+    this.removePickerEventListener();
     // remove dom
     this.remove();
     // remove data
-    removeData(this, 'datepicker');
+    removeData(this.$el, 'datepicker');
   };
 
   // ---------------- diy date picker ----------------
@@ -1200,6 +1423,10 @@
     var elements = getElements(selectors);
 
     for (var i = 0, len = elements.length; i < len; i++) {
+      var existing = getData(elements[i], 'datepicker');
+      if (existing) {
+        existing.destroy();
+      }
       new DatePicker(elements[i], options);
     }
   };

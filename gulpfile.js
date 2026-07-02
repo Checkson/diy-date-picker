@@ -8,7 +8,7 @@ const notify = require('gulp-notify');
 const livereload = require('gulp-livereload');
 const uglify = require('gulp-uglify');
 const rename = require('gulp-rename');
-const sass = require('gulp-sass');
+const sass = require('gulp-sass')(require('sass'));
 const cleanCSS = require('gulp-clean-css');
 const connect = require('gulp-connect');
 

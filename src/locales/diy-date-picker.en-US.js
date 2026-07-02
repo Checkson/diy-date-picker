@@ -3,7 +3,7 @@
  * Create by author on 2019-12-17
  */
 ;(function (global) {
-  global.diyDatePicker.langs['en-UK'] = {
+  global.diyDatePicker.langs['en-US'] = {
     days: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
     daysShort: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
     daysMin: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
