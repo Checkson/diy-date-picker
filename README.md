@@ -1,3 +1,5 @@
+
+
 # diy-date-picker
 
 一个用原生的 JavaScript 实现、无依赖的日期选择器。
@@ -156,7 +158,7 @@ diyDatePicker.clearDate('#datepicker');
 
 ## 国际化
 
-该插件支持国际化。默认是简体中文（zh-CN）。其他可以用的翻译可以在 dist/locales 目录中找到，只需在插件之后引入您想要的语言环境即可。想要添加新的语言，只需要在全局对象 diyDatePicker.langs 中添加一个语言键值即可。例如：
+该插件支持国际化。默认是简体中文（zh-CN）。其他可以用的翻译可以在 dist/locales 目录中找到（例如 `diy-date-picker.en.min.js`），只需在插件之后引入您想要的语言环境即可。想要添加新的语言，只需要在全局对象 diyDatePicker.langs 中添加一个语言键值即可。例如：
 
 ```javascript
 ;(function (global) {
